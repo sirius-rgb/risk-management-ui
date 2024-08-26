@@ -1,3 +1,6 @@
+"use client"
+
+import { useRouter } from "next/navigation"
 import { FileUpIcon, FolderUp, UploadIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -6,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 export default function Page() {
+  const router = useRouter()
   return (
     <section className="m-auto mt-8 p-8 sm:px-16">
       {/* min-h-screen  */}
@@ -42,7 +46,12 @@ export default function Page() {
           Upload File
         </button>
       </div>
-      <Button className="mb-4 mt-2 max-h-8 w-96">Review</Button>
+      <Button
+        className="mb-4 mt-2 max-h-8 w-96"
+        onClick={() => router.push("/create-detail")}
+      >
+        Create
+      </Button>
     </section>
   )
 }

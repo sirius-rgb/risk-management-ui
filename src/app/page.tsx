@@ -61,7 +61,9 @@ export default function Home() {
   return (
     <main className="relative flex h-screen items-center justify-center">
       <h1 className="absolute left-8 top-8 font-semibold sm:text-lg md:text-xl lg:text-2xl">
-        SECRET AI Assistant
+        <a className="cursor-pointer" href="/home">
+          SECRET AI Assistant
+        </a>
       </h1>
       <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center">
         <Icons.logo className="h-16 w-16" />

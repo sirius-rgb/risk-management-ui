@@ -8,9 +8,7 @@ export default function Footer() {
     <footer className="bg-white dark:bg-gray-900">
       <hr className="mx-auto my-2 w-[90%] border-gray-200 dark:border-gray-700 sm:mx-auto lg:my-2 " />
       <div className=" max-w-screen-2xl py-2 md:mx-4 md:flex md:justify-between md:px-4 lg:mx-16 lg:px-2 lg:py-4">
-        {/* 左盒子 */}
         <div className="flex-col md:flex lg:gap-12 ">
-          {/* site name */}
           <div>
             <a href="#" className="flex items-center">
               <span className="self-center whitespace-nowrap text-2xl font-semibold dark:text-white">
@@ -27,7 +25,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* 右盒子 */}
         <div className="sm:flex sm:items-center sm:justify-between">
           <div className="grid grid-cols-3 sm:grid-cols-3 sm:gap-4 md:gap-8 lg:gap-24">
             <div>

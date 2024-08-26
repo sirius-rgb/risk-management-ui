@@ -17,14 +17,16 @@ export default function Header() {
       <div className="max-w-8xl mx-12 px-4 ">
         <div className="flex h-16 items-center justify-between gap-64">
           <div className=" text-2xl font-semibold text-gray-900">
-            SECRET AI Assistant
+            <a className="cursor-pointer" href="/home">
+              SECRET AI Assistant
+            </a>
           </div>
           <div className="items-center justify-center text-gray-900 sm:hidden md:flex md:space-x-2 lg:space-x-4  ">
-            <a href="/">Page</a>
-            <a href="#">Page</a>
-            <a href="#">Chat</a>
+            <a href="/">Login</a>
+            <a href="/issue">Issue</a>
+            <a href="/chat">Chat</a>
             <Button>
-              <Link href="/">Home</Link>
+              <Link href="/home">Home</Link>
             </Button>
             <ModeToggle />
           </div>

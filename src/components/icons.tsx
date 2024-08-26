@@ -1,4 +1,13 @@
-import { Bot, FileUp, Moon, SunMedium } from "lucide-react"
+import {
+  Bot,
+  CalendarDays,
+  CircleUserRound,
+  FileUp,
+  Globe,
+  Lock,
+  Moon,
+  SunMedium,
+} from "lucide-react"
 
 export type IconKeys = keyof typeof icons
 
@@ -11,6 +20,10 @@ const icons = {
   sun: SunMedium,
   moon: Moon,
   fileup: FileUp,
+  globe: Globe,
+  user: CircleUserRound,
+  lock: Lock,
+  calendar: CalendarDays,
 }
 
 export const Icons: IconsType = icons
