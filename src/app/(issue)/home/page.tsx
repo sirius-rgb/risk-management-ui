@@ -7,10 +7,49 @@ import { Icons } from "@/components/icons"
 
 export default function Page() {
   const router = useRouter()
+  const heros = [
+    {
+      title: "Issue Review",
+      href: "/review",
+      content: `Assist in issue creation to the framework requirements`,
+      name: "review",
+    },
+    {
+      title: "Issue Creation",
+      href: "/create",
+      content: `Assist in issue creation to the framework requirements`,
+      name: "create",
+    },
+  ]
+  const tasks = [
+    {
+      icon: <Icons.globe />,
+      title: "Control Review",
+      content: `Body text for whatever you'd like to say.Add main takeaway
+                points, quotes, anecdotes, or even a very very short story.`,
+    },
+    {
+      icon: <Icons.user />,
+      title: "Control Creation",
+      content: `Body text for whatever you'd like to say.Add main takeaway
+                points, quotes, anecdotes, or even a very very short story.`,
+    },
+    {
+      icon: <Icons.lock />,
+      title: "Risk Assessment Review",
+      content: `Body text for whatever you'd like to say.Add main takeaway
+                points, quotes, anecdotes, or even a very very short story.`,
+    },
+    {
+      icon: <Icons.calendar />,
+      title: "Control Assessment Drafting",
+      content: `Body text for whatever you'd like to say.Add main takeaway
+                points, quotes, anecdotes, or even a very very short story.`,
+    },
+  ]
   return (
     <>
       <section className="m-auto mt-4 p-4 sm:px-16">
-        {" "}
         <div className="relative isolate px-6 pt-6 lg:px-8">
           <div
             className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
@@ -26,10 +65,10 @@ export default function Page() {
           </div>
           <div className="mx-auto max-w-2xl py-24 sm:py-28 lg:py-32">
             <div className="text-center">
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+              <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
                 What do you need help with?
               </h1>
-              <p className="mt-6 text-lg leading-8 text-gray-600">
+              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
                 Select the task that you need help with
               </p>
             </div>
@@ -50,83 +89,42 @@ export default function Page() {
       </section>
       <section className="m-auto mt-4 p-4 sm:px-16">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="max-w-sm cursor-pointer border-gray-200 bg-white p-6  hover:rounded-lg hover:border hover:shadow  dark:border-gray-700 dark:bg-gray-800">
-            <a href="#">
-              <h5 className="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                Issue Creation
-              </h5>
+          {heros.map((hero, index) => (
+            <a
+              key={index}
+              href={hero.href}
+              className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300  hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+            >
+              <h2 className="mb-3 text-2xl font-semibold">{hero.title}</h2>
+              <p className="mb-3 max-w-[30ch] opacity-50 dark:text-gray-200">
+                {hero.content}
+              </p>
+              <Button onClick={() => router.push(hero.href)}>
+                {hero.name}
+              </Button>
             </a>
-            <p className="mb-3 font-normal text-gray-500 dark:text-gray-400">
-              Assist in issue creation according to the framework requirements
-            </p>{" "}
-            <Button onClick={() => router.push("/create")}>Create</Button>
-          </div>
-          <div className="max-w-sm cursor-pointer border-gray-200 bg-white p-6  hover:rounded-lg hover:border hover:shadow  dark:border-gray-700 dark:bg-gray-800">
-            <a href="#">
-              <h5 className="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                Issue Review
-              </h5>
-            </a>
-            <p className="mb-3 font-normal text-gray-500 dark:text-gray-400">
-              Assist in issue creation according to the framework requirements
-            </p>
-            <Button onClick={() => router.push("/review")}>Review</Button>
-          </div>
+          ))}
         </div>
       </section>
       <section className="m-auto p-4 sm:px-16">
-        <h2 className="mb-4 text-xl font-bold tracking-tight text-gray-900 sm:text-2xl">
+        <h2 className="mb-4 text-xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-2xl">
           Other Tasks
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="max-w-sm bg-white  p-6 hover:rounded-lg hover:border hover:border-gray-200  hover:shadow dark:border-gray-700 dark:bg-gray-800">
-            <Icons.globe />
-            <a href="#">
+          {tasks.map((task, index) => (
+            <a
+              key={index}
+              className="group cursor-pointer rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300  hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+            >
+              {task.icon}
               <h5 className="my-2 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                Control Review
+                {task.title}
               </h5>
+              <p className="mb-3 font-normal text-gray-500 dark:text-gray-400">
+                {task.content}
+              </p>
             </a>
-            <p className="mb-3 font-normal text-gray-500 dark:text-gray-400">
-              Body text for whatever you'd like to say.Add main takeaway points,
-              quotes, anecdotes, or even a very very short story.
-            </p>
-          </div>
-          <div className="max-w-sm bg-white  p-6 hover:rounded-lg hover:border hover:border-gray-200  hover:shadow dark:border-gray-700 dark:bg-gray-800">
-            <Icons.user />
-            <a href="#">
-              <h5 className="my-2 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                Control Creation
-              </h5>
-            </a>
-            <p className="mb-3 font-normal text-gray-500 dark:text-gray-400">
-              Body text for whatever you'd like to say.Add main takeaway points,
-              quotes, anecdotes, or even a very very short story.
-            </p>
-          </div>
-          <div className="max-w-sm bg-white  p-6 hover:rounded-lg hover:border hover:border-gray-200  hover:shadow dark:border-gray-700 dark:bg-gray-800">
-            <Icons.lock />
-            <a href="#">
-              <h5 className="my-2 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                Risk Assessment Review
-              </h5>
-            </a>
-            <p className="mb-3 font-normal text-gray-500 dark:text-gray-400">
-              Body text for whatever you'd like to say.Add main takeaway points,
-              quotes, anecdotes, or even a very very short story.
-            </p>
-          </div>
-          <div className="max-w-sm bg-white  p-6 hover:rounded-lg hover:border hover:border-gray-200  hover:shadow dark:border-gray-700 dark:bg-gray-800">
-            <Icons.calendar />
-            <a href="#">
-              <h5 className="my-2 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                Control Assessment Drafting
-              </h5>
-            </a>
-            <p className="mb-3 font-normal text-gray-500 dark:text-gray-400">
-              Body text for whatever you'd like to say.Add main takeaway points,
-              quotes, anecdotes, or even a very very short story.
-            </p>
-          </div>
+          ))}
         </div>
       </section>
     </>

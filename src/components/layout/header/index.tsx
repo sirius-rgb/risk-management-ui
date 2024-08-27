@@ -13,15 +13,15 @@ export default function Header() {
     setIsOpen(!isOpen)
   }
   return (
-    <nav className="sticky top-0 z-10 border-b border-gray-200 bg-white bg-opacity-30 backdrop-blur-lg backdrop-filter">
+    <nav className="sticky top-0 z-10 border-b border-gray-200 bg-white bg-opacity-30 backdrop-blur-lg backdrop-filter dark:border-none dark:bg-transparent">
       <div className="max-w-8xl mx-12 px-4 ">
         <div className="flex h-16 items-center justify-between gap-64">
-          <div className=" text-2xl font-semibold text-gray-900">
+          <div className=" text-2xl font-semibold text-gray-900 dark:text-white">
             <a className="cursor-pointer" href="/home">
-              SECRET AI Assistant
+              Risk Management Co-pilot
             </a>
           </div>
-          <div className="items-center justify-center text-gray-900 sm:hidden md:flex md:space-x-2 lg:space-x-4  ">
+          <div className="items-center justify-center text-gray-900 dark:text-white sm:hidden md:flex md:space-x-2  lg:space-x-4">
             <a href="/">Login</a>
             <a href="/issue">Issue</a>
             <a href="/chat">Chat</a>

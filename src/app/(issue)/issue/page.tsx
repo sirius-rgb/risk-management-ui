@@ -33,7 +33,7 @@ export default function Page() {
         className="mb-4 mt-2 min-h-64"
         placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Facere hic aspernatur architecto quod reprehenderit non repellat doloribus rem asperiores distinctio quisquam itaque libero consequuntur ipsa, assumenda facilis exercitationem sequi corporis.Lorem ipsum, dolor sit amet consectetur adipisicing elit. Facere hic aspernatur architecto quod reprehenderit non repellat doloribus rem asperiores distinctio quisquam itaque libero consequuntur ipsa, assumenda facilis exercitationem sequi corporis.Lorem ipsum, dolor sit amet consectetur adipisicing elit. Facere hic aspernatur architecto quod reprehenderit non repellat doloribus rem asperiores distinctio quisquam itaque libero consequuntur ipsa, assumenda facilis exercitationem sequi corporis.Lorem ipsum, dolor sit amet consectetur adipisicing elit. Facere hic aspernatur architecto quod reprehenderit non repellat doloribus rem asperiores distinctio quisquam itaque libero consequuntur ipsa, assumenda facilis exercitationem sequi corporis.Lorem ipsum, dolor sit amet consectetur adipisicing elit. Facere hic aspernatur architecto quod reprehenderit non repellat doloribus rem asperiores distinctio quisquam itaque libero consequuntur ipsa, assumenda facilis exercitationem sequi corporis."
       />
-      <Label htmlFor="support">Any supporting files for uplaoad /reivew?</Label>
+      {/* <Label htmlFor="support">Any supporting files for uplaoad /reivew?</Label>
       <div className="relative my-3">
         <Input
           id="support"
@@ -42,10 +42,9 @@ export default function Page() {
         />
         <button className="flex h-10 w-full items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
           <UploadIcon className="mr-2" />
-          {/* <FileUpIcon className="mr-2" /> */}
           Upload File
         </button>
-      </div>
+      </div> */}
       <Button
         className="mb-4 mt-2 max-h-8 w-96"
         onClick={() => router.push("/create-detail")}

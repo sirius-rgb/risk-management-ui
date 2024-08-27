@@ -1,15 +1,31 @@
-import { FileUpIcon, FolderUp, UploadIcon } from "lucide-react"
+"use client"
 
+import { useRouter } from "next/navigation"
+import { useShallow } from "zustand/react/shallow"
+
+import { useStore } from "@/lib/store"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
+function useIssue() {
+  return useStore(
+    useShallow((store) => ({
+      count: store.count,
+      setProposedIssueTitle: store.setProposedIssueTitle,
+      setProposedIssueDescription: store.setProposedIssueDescription,
+    }))
+  )
+}
 export default function Page() {
+  const router = useRouter()
+  const { setProposedIssueTitle, setProposedIssueDescription } = useIssue()
+
   return (
     <section className="m-auto mt-8 p-8 sm:px-16">
-      {/* min-h-screen  */}
-      <h2 className="text-4xl  font-semibold text-gray-900">Issue Creation</h2>
+      <h2 className="text-4xl  font-semibold text-gray-900 dark:text-white">
+        Issue Creation
+      </h2>
       <p className="my-3 text-sm text-gray-400">
         Please Provide Details of Control or Risk Gaps Below
       </p>
@@ -18,7 +34,8 @@ export default function Page() {
         id="title"
         rows={1}
         className="mb-4 mt-2 min-h-8"
-        placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
+        placeholder="e.g. Inadequate Access Control for Sensitive Data"
+        onChange={(e) => setProposedIssueTitle(e.target.value)}
       />
 
       <Label htmlFor="description">
@@ -27,23 +44,18 @@ export default function Page() {
       <Textarea
         id="description"
         className="mb-4 mt-2 min-h-64"
-        placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Facere hic aspernatur architecto quod reprehenderit non repellat doloribus rem asperiores distinctio quisquam itaque libero consequuntur ipsa, assumenda facilis exercitationem sequi corporis.Lorem ipsum, dolor sit amet consectetur adipisicing elit. Facere hic aspernatur architecto quod reprehenderit non repellat doloribus rem asperiores distinctio quisquam itaque libero consequuntur ipsa, assumenda facilis exercitationem sequi corporis.Lorem ipsum, dolor sit amet consectetur adipisicing elit. Facere hic aspernatur architecto quod reprehenderit non repellat doloribus rem asperiores distinctio quisquam itaque libero consequuntur ipsa, assumenda facilis exercitationem sequi corporis.Lorem ipsum, dolor sit amet consectetur adipisicing elit. Facere hic aspernatur architecto quod reprehenderit non repellat doloribus rem asperiores distinctio quisquam itaque libero consequuntur ipsa, assumenda facilis exercitationem sequi corporis.Lorem ipsum, dolor sit amet consectetur adipisicing elit. Facere hic aspernatur architecto quod reprehenderit non repellat doloribus rem asperiores distinctio quisquam itaque libero consequuntur ipsa, assumenda facilis exercitationem sequi corporis."
+        placeholder="e.g. The current access control mechanisms in place for sensitive data within the organization are inadequate, allowing unauthorized personnel to potentially access confidential information. This gap could lead to data breaches, unauthorized data manipulation, and a loss of customer trust. The lack of role-based access controls (RBAC) and periodic access reviews exacerbates this risk, making it imperative to strengthen access policies and implement stricter data governance practices."
+        onChange={(e) => setProposedIssueDescription(e.target.value)}
       />
-      <Label htmlFor="support">Any supporting files for uplaoad /reivew?</Label>
-      <div className="relative my-3">
-        <Input
-          id="support"
-          type="file"
-          className="absolute inset-0 cursor-pointer opacity-0"
-        />
-        <button className="flex h-10 w-full items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-          <UploadIcon className="mr-2" />
-          {/* <FileUpIcon className="mr-2" /> */}
-          Upload File
-        </button>
-      </div>
-      <Button className="mb-4 mt-2 max-h-8 w-96">
-        <a href="/create-detail">Review</a>
+      <Button
+        className="mb-4 mt-2 max-h-8 w-96"
+        onClick={() => {
+          router.push("/create-detail")
+          // setProposedIssueTitle("test title")
+          // setProposedIssueDescription("test description")
+        }}
+      >
+        Create
       </Button>
     </section>
   )

@@ -29,20 +29,6 @@ export default function Home() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const router = useRouter()
-  const notifications = [
-    {
-      title: "Top secret!!!",
-      description: "1 hour ago",
-    },
-    {
-      title: "Top secret!!!",
-      description: "1 hour ago",
-    },
-    {
-      title: "Top secret!!!",
-      description: "2 hours ago",
-    },
-  ]
 
   const handleLogin = () => {
     if (email && password) {
@@ -62,7 +48,7 @@ export default function Home() {
     <main className="relative flex h-screen items-center justify-center">
       <h1 className="absolute left-8 top-8 font-semibold sm:text-lg md:text-xl lg:text-2xl">
         <a className="cursor-pointer" href="/home">
-          SECRET AI Assistant
+          Risk Management Co-pilot
         </a>
       </h1>
       <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center">
@@ -94,6 +80,12 @@ export default function Home() {
             Login
           </Button>
           <p className="sm:text-md max-w-[24rem] leading-normal text-muted-foreground sm:leading-6">
+            <Input
+              id="link-checkbox"
+              type="checkbox"
+              value=""
+              className="mr-2 inline h-3 w-3 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+            />
             By clicking continue, you agree to our
             <TooltipProvider>
               <Tooltip>
@@ -104,38 +96,30 @@ export default function Home() {
                   <Card className={cn("w-[380px]")}>
                     <CardHeader>
                       <CardTitle>Terms of Service</CardTitle>
-                      <CardDescription>TL DR;</CardDescription>
+                      <CardDescription>RM Copilot</CardDescription>
                     </CardHeader>
                     <CardContent className="grid gap-4">
                       <div className=" flex items-center space-x-4 rounded-md border p-4">
                         <BellRing />
                         <div className="flex-1 space-y-1">
                           <p className="text-sm font-medium leading-none">
-                            Please carefully read the terms
+                            RM Copilot is a AI assistant
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            please read, don't skip
+                            Please have a look at our terms of service
                           </p>
                         </div>
                         {/* <Switch /> */}
                       </div>
                       <div>
-                        {notifications.map((notification, index) => (
-                          <div
-                            key={index}
-                            className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0"
-                          >
-                            <span className="flex h-2 w-2 translate-y-1 rounded-full bg-sky-500" />
-                            <div className="space-y-1">
-                              <p className="text-sm font-medium leading-none">
-                                {notification.title}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {notification.description}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
+                        <p>
+                          Welcome to RM Copilot. By accessing or using our
+                          application, you agree to comply with and be bound by
+                          the following terms and conditions. These terms apply
+                          to all users of the application, including but not
+                          limited to risk managers, analysts, and other
+                          stakeholders.
+                        </p>
                       </div>
                     </CardContent>
                     <CardFooter>
