@@ -5,7 +5,9 @@ import { Textarea } from "@/components/ui/textarea"
 export default function Page() {
   return (
     <section className="m-auto mt-8 p-8 sm:px-16">
-      <h2 className="text-4xl  font-semibold text-gray-900">Issue Review</h2>
+      <h2 className="text-4xl  font-semibold text-gray-900 dark:text-white">
+        Issue Review
+      </h2>
       <p className="my-3 text-sm text-gray-400">
         What is the issue that you would like to review?
       </p>

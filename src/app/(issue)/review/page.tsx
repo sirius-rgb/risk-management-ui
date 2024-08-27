@@ -10,7 +10,9 @@ export default function Page() {
   const router = useRouter()
   return (
     <section className="m-auto mt-8 p-8 sm:px-16">
-      <h2 className="text-4xl font-semibold text-gray-900">Issue Review</h2>
+      <h2 className="text-4xl font-semibold text-gray-900 dark:text-white">
+        Issue Review
+      </h2>
       <p className="my-4 text-xl text-gray-600">
         Please input the Issue ID of the issue you would like to review
       </p>

@@ -89,7 +89,7 @@ export default function Home() {
             By clicking continue, you agree to our
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger className="cursor-pointer font-semibold text-black">
+                <TooltipTrigger className="cursor-pointer font-semibold text-black dark:text-white">
                   Terms of Service
                 </TooltipTrigger>
                 <TooltipContent>
@@ -133,7 +133,7 @@ export default function Home() {
               </Tooltip>
             </TooltipProvider>{" "}
             and{" "}
-            <span className="cursor-pointer font-semibold text-black">
+            <span className="cursor-pointer font-semibold text-black dark:text-white">
               Privacy Policy
             </span>
           </p>
