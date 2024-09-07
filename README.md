@@ -25,3 +25,9 @@ npm i
 # start the local server
 npm run dev
 ```
+
+## Using Docker
+
+1. Install Docker on your machine.
+1. Build your container: `docker build -t rm-management-ui-docker .`
+1. Run your container: `docker run -p 3000:3000 rm-management-ui-docker`

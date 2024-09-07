@@ -1,7 +1,6 @@
 import type { PropsWithChildren } from "react"
 import { Inter } from "next/font/google"
 
-import StoreProvider from "@/lib/StoreProvider"
 import { cn } from "@/lib/utils"
 import Footer from "@/components/layout/footer"
 import Header from "@/components/layout/header"
@@ -20,18 +19,16 @@ export default function Page({ children }: PropsWithChildren<unknown>) {
         )}
       >
         {" "}
-        <StoreProvider lastUpdate={new Date().getTime()}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Header />
-            {children}
-            {/* <Footer /> */}
-          </ThemeProvider>
-        </StoreProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Header />
+          {children}
+          {/* <Footer /> */}
+        </ThemeProvider>
       </body>
     </html>
   )

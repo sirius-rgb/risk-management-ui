@@ -1,26 +1,18 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useShallow } from "zustand/react/shallow"
 
-import { useStore } from "@/lib/store"
+import { useStore } from "@/lib/slices"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
-function useIssue() {
-  return useStore(
-    useShallow((store) => ({
-      count: store.count,
-      setProposedIssueTitle: store.setProposedIssueTitle,
-      setProposedIssueDescription: store.setProposedIssueDescription,
-    }))
-  )
-}
 export default function Page() {
   const router = useRouter()
-  const { setProposedIssueTitle, setProposedIssueDescription } = useIssue()
-
+  const setProposedIssueTitle = useStore((state) => state.setProposedIssueTitle)
+  const setProposedIssueDescription = useStore(
+    (state) => state.setProposedIssueDescription
+  )
   return (
     <section className="m-auto mt-8 p-8 sm:px-16">
       <h2 className="text-4xl  font-semibold text-gray-900 dark:text-white">
@@ -51,8 +43,8 @@ export default function Page() {
         className="mb-4 mt-2 max-h-8 w-96"
         onClick={() => {
           router.push("/create-detail")
-          // setProposedIssueTitle("test title")
-          // setProposedIssueDescription("test description")
+          setProposedIssueTitle("test title")
+          setProposedIssueDescription("test description")
         }}
       >
         Create

@@ -1,30 +1,27 @@
 "use client"
 
 import { useState } from "react"
+import * as React from "react"
 import { useRouter } from "next/navigation"
 import { nanoid } from "nanoid"
-import { useShallow } from "zustand/react/shallow"
 
-import { useStore } from "@/lib/store"
+import { useStore } from "@/lib/slices"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-
-function useIssue() {
-  return useStore(
-    useShallow((store) => ({
-      proposedIssueTitle: store.proposedIssueTitle,
-      proposedIssueDescription: store.proposedIssueDescription,
-    }))
-  )
-}
+import Rating from "@/components/rate"
 
 function generateUniqueId() {
   return `R-${nanoid(9)}` // 生成 9 位随机字符串
 }
 
 export default function Page() {
-  const { proposedIssueTitle, proposedIssueDescription } = useIssue()
+  const count = useStore((state) => state.count)
+  const bears = useStore((state) => state.bears)
+  const proposedIssueTitle = useStore((state) => state.proposedIssueTitle)
+  const proposedIssueDescription = useStore(
+    (state) => state.proposedIssueDescription
+  )
   const router = useRouter()
   const [files, setFiles] = useState<FileList | null>(null)
   const [revisedTitle, setRevisedTitle] = useState(
@@ -52,7 +49,7 @@ export default function Page() {
       <Textarea
         id="title"
         rows={1}
-        className="mb-4 mt-2 min-h-8"
+        className="mb-4 mt-2 min-h-8 bg-gray-100"
         defaultValue={proposedIssueTitle}
         placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
       />
@@ -63,14 +60,6 @@ export default function Page() {
         className="mb-4 mt-2 min-h-64"
         defaultValue={proposedIssueDescription}
         placeholder="please provide details of control or risk gaps below"
-      />
-      <Label htmlFor="title">Any Supporting files for upload / review?</Label>
-      <Textarea
-        id="title"
-        rows={1}
-        className="mb-4 mt-2 min-h-8"
-        // defaultValue={files?.length}
-        placeholder="please upload any supporting files for upload / review"
       />
       <Label htmlFor="title">Revised Issue Title</Label>
       <Textarea
@@ -88,25 +77,29 @@ export default function Page() {
         defaultValue={revisedDescription}
         placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
       />
-      <Label htmlFor="title">Additional Information Needed</Label>
-      <Textarea
+      <Label htmlFor="title" className="select-none">
+        Additional Information Needed
+      </Label>
+      <SecureTextarea
         id="title"
         rows={1}
-        value={additionalInfo}
-        className="mb-4 mt-2 min-h-32"
+        defaultValue={additionalInfo}
+        className="mb-4 mt-2 min-h-32 select-none"
+        // disabled={true}
         placeholder={`
-        1. What is the risk or control gap?
-        2. What is the impact of the risk or control gap?
-        3. What is the proposed solution?
-        `}
+       1. What is the risk or control gap?
+       2. What is the impact of the risk or control gap?
+       3. What is the proposed solution?
+       `}
       />
+      <Rating />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="title">Proposed Risk Taxonomy Linkage</Label>
           <Textarea
             id="title"
             rows={1}
-            value={uniqueId}
+            defaultValue={uniqueId}
             className="mb-4 mt-2 min-h-8"
             placeholder="R-123456789 Risk of a failing asleep"
           />
@@ -116,7 +109,7 @@ export default function Page() {
           <Textarea
             id="title"
             rows={1}
-            value={randomString}
+            defaultValue={randomString}
             className="mb-4 mt-2 min-h-8"
             placeholder="People"
           />
@@ -131,3 +124,50 @@ export default function Page() {
     </section>
   )
 }
+
+const SecureTextarea = React.forwardRef<
+  HTMLTextAreaElement,
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>
+>(({ disabled, ...props }, ref) => {
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "c") {
+        e.preventDefault() // 禁止 Ctrl+C 或 Command+C 复制
+      }
+    }
+
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault() // 禁止右键菜单
+    }
+
+    const handleCopy = (e: ClipboardEvent) => {
+      e.preventDefault() // 禁止复制操作
+    }
+
+    const textareaElement = textareaRef.current
+
+    if (textareaElement && disabled) {
+      textareaElement.addEventListener("keydown", handleKeyDown)
+      textareaElement.addEventListener("contextmenu", handleContextMenu)
+      textareaElement.addEventListener("copy", handleCopy)
+    }
+
+    return () => {
+      if (textareaElement) {
+        textareaElement.removeEventListener("keydown", handleKeyDown)
+        textareaElement.removeEventListener("contextmenu", handleContextMenu)
+        textareaElement.removeEventListener("copy", handleCopy)
+      }
+    }
+  }, [disabled])
+
+  return (
+    <Textarea ref={ref ? ref : textareaRef} disabled={disabled} {...props} />
+  )
+})
+
+SecureTextarea.displayName = "SecureTextarea"
+
+export { SecureTextarea }

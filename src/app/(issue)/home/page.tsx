@@ -9,16 +9,16 @@ export default function Page() {
   const router = useRouter()
   const heros = [
     {
-      title: "Issue Review",
-      href: "/review",
-      content: `Assist in issue creation to the framework requirements`,
-      name: "review",
-    },
-    {
       title: "Issue Creation",
       href: "/create",
       content: `Assist in issue creation to the framework requirements`,
       name: "create",
+    },
+    {
+      title: "Issue Review",
+      href: "/review",
+      content: `Assist in issue creation to the framework requirements`,
+      name: "review",
     },
   ]
   const tasks = [
@@ -99,7 +99,13 @@ export default function Page() {
               <p className="mb-3 max-w-[30ch] opacity-50 dark:text-gray-200">
                 {hero.content}
               </p>
-              <Button onClick={() => router.push(hero.href)}>
+              <Button
+                className="relative z-10"
+                onClick={(e) => {
+                  e.preventDefault()
+                  router.push(hero.href)
+                }}
+              >
                 {hero.name}
               </Button>
             </a>

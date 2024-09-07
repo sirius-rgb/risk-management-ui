@@ -1,0 +1,43 @@
+import { useState } from "react"
+
+const Rating = () => {
+  const [rating, setRating] = useState(0) // 保存点击后的评分
+  const [hoverRating, setHoverRating] = useState(0) // 保存 hover 的评分
+  const labels = ["sad", "so-so", "normal", "good", "great"] // 评分标签
+
+  return (
+    <div className="flex items-center">
+      {labels.map((label, index) => (
+        <button
+          key={index}
+          type="button"
+          onMouseEnter={() => setHoverRating(index + 1)}
+          onMouseLeave={() => setHoverRating(0)}
+          onClick={() => setRating(index + 1)}
+          className="focus:outline-none"
+        >
+          <svg
+            className={`me-1 h-4 w-4 ${
+              (hoverRating || rating) > index
+                ? "text-yellow-300"
+                : "text-gray-300 dark:text-gray-500"
+            }`}
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 22 20"
+          >
+            <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+          </svg>
+        </button>
+      ))}
+      <p className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400">
+        {hoverRating || rating
+          ? labels[(hoverRating || rating) - 1]
+          : "No rating yet"}
+      </p>
+    </div>
+  )
+}
+
+export default Rating
