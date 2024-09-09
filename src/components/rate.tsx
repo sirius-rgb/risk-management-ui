@@ -1,9 +1,9 @@
 import { useState } from "react"
 
 const Rating = () => {
-  const [rating, setRating] = useState(0) // 保存点击后的评分
-  const [hoverRating, setHoverRating] = useState(0) // 保存 hover 的评分
-  const labels = ["sad", "so-so", "normal", "good", "great"] // 评分标签
+  const [rating, setRating] = useState(5)
+  const [hoverRating, setHoverRating] = useState(5)
+  const labels = ["sad", "so-so", "normal", "good", "great"]
 
   return (
     <div className="flex items-center">

@@ -1,11 +1,17 @@
 "use client"
 
-import { KeyboardEvent, useState } from "react"
+import { KeyboardEvent, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@radix-ui/react-tooltip"
 import { BellRing, Check } from "lucide-react"
 import { toast } from "sonner"
 
-import { siteConfig } from "@/config/site"
+import { useAuthStore } from "@/lib/store/authStore"
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
@@ -17,25 +23,48 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { Icons } from "@/components/icons"
 
 export default function Home() {
-  const [email, setEmail] = useState("")
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [agreeTerms, setAgreeTerms] = useState(false)
   const router = useRouter()
+  const { isLoggedIn, setLoggedIn } = useAuthStore()
 
-  const handleLogin = () => {
-    if (email && password) {
-      router.push("/home")
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.replace("/home")
+    }
+  }, [isLoggedIn, router])
+
+  const handleLogin = async () => {
+    if (username && password && agreeTerms) {
+      try {
+        const response = await fetch("/api/auth", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password }),
+        })
+
+        const data = await response.json()
+        console.log(data)
+
+        if (data.success) {
+          setLoggedIn(true, { username, avatar: "/avatar.png" })
+          router.push("/home")
+        } else {
+          toast(data.message || "登录失败")
+        }
+      } catch (error) {
+        toast("服务器错误！")
+      }
+    } else if (!agreeTerms) {
+      toast("请同意服务条款和隐私政策")
     } else {
-      toast("Please fill in username and password first.")
-      return
+      toast("请输入用户名和密码")
     }
   }
 
@@ -48,7 +77,7 @@ export default function Home() {
     <main className="relative flex h-screen items-center justify-center">
       <h1 className="absolute left-8 top-8 font-semibold sm:text-lg md:text-xl lg:text-2xl">
         <a className="cursor-pointer" href="/home">
-          Risk Management Co-pilot
+          Co-pilot
         </a>
       </h1>
       <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center">
@@ -61,13 +90,14 @@ export default function Home() {
         </p>
         <Input
           className="w-96"
-          placeholder="email@domain.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          placeholder="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
         <Input
           className="w-96"
-          placeholder="Password"
+          type="password"
+          placeholder="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           onKeyDown={handleKeyPress}
@@ -83,7 +113,8 @@ export default function Home() {
             <Input
               id="link-checkbox"
               type="checkbox"
-              value=""
+              checked={agreeTerms}
+              onChange={(e) => setAgreeTerms(e.target.checked)}
               className="mr-2 inline h-3 w-3 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
             />
             By clicking continue, you agree to our
@@ -113,7 +144,7 @@ export default function Home() {
                       </div>
                       <div>
                         <p>
-                          Welcome to RM Copilot. By accessing or using our
+                          Welcome to Copilot. By accessing or using our
                           application, you agree to comply with and be bound by
                           the following terms and conditions. These terms apply
                           to all users of the application, including but not
