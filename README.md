@@ -1,4 +1,4 @@
-<h1 align="center">risk-management-ui</h1>
+<h1 align="center">copilot-ui</h1>
 
 <p align="center"><b>An useful AI Assistant</b></p>
 <p align="center">
@@ -20,10 +20,10 @@ cp .env.example .env.local
 echo "registry=<URL>" > .npmrc
 
 # install dependencies
-npm i
+pnpm i
 
 # start the local server
-npm run dev
+pnpm run dev
 ```
 
 ## Using Docker

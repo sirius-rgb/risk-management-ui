@@ -10,7 +10,7 @@ type AuthState = {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  isLoggedIn: false,
+  isLoggedIn: true,
   user: null,
   setLoggedIn: (status, user) =>
     set({ isLoggedIn: status, user: user || null }),

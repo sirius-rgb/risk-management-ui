@@ -88,12 +88,12 @@ export default function Page() {
         </div>
       </section>
       <section className="m-auto mt-4 p-4 sm:px-16">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="mx-auto grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
           {heros.map((hero, index) => (
             <a
               key={index}
               href={hero.href}
-              className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300  hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+              className="group flex flex-col items-center rounded-lg border border-transparent px-5 py-4 text-center transition-colors hover:border-gray-300 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30 sm:block sm:items-start sm:text-left"
             >
               <h2 className="mb-3 text-2xl font-semibold">{hero.title}</h2>
               <p className="mb-3 max-w-[30ch] opacity-50 dark:text-gray-200">
@@ -113,16 +113,16 @@ export default function Page() {
         </div>
       </section>
       <section className="m-auto p-4 sm:px-16">
-        <h2 className="mb-4 text-xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-2xl">
+        <h2 className="mb-4 text-center text-xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-left sm:text-2xl">
           Other Tasks
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {tasks.map((task, index) => (
             <a
               key={index}
-              className="group cursor-pointer rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300  hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+              className="group flex cursor-pointer flex-col items-center rounded-lg border border-transparent px-5 py-4 text-center transition-colors hover:border-gray-300 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30 sm:block sm:items-start sm:text-left"
             >
-              {task.icon}
+              <div className="sm:inline-block">{task.icon}</div>
               <h5 className="my-2 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
                 {task.title}
               </h5>
