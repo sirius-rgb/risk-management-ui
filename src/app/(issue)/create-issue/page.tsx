@@ -61,7 +61,10 @@ export default function Page() {
         placeholder="e.g. The current access control mechanisms in place for sensitive data within the organization are inadequate, allowing unauthorized personnel to potentially access confidential information. This gap could lead to data breaches, unauthorized data manipulation, and a loss of customer trust. The lack of role-based access controls (RBAC) and periodic access reviews exacerbates this risk, making it imperative to strengthen access policies and implement stricter data governance practices."
         onChange={(e) => setProposedIssueDescription(e.target.value)}
       />
-      <Button className="mb-4 mt-2 max-h-8 w-96" onClick={handleSubmit}>
+      <Button
+        className="mb-4 mt-2 max-h-8 w-full sm:w-96"
+        onClick={handleSubmit}
+      >
         Create
       </Button>
     </section>
