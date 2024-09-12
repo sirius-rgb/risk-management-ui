@@ -20,8 +20,14 @@ import {
   Users,
 } from "lucide-react"
 
-import { useAuthStore } from "@/lib/store/authStore"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,20 +45,24 @@ import {
 import { ModeToggle } from "@/components/mode-toggle"
 
 export default function Header() {
-  const [isOpen, setIsOpen] = useState(false)
-  const { isLoggedIn, user, setLoggedIn } = useAuthStore()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const router = useRouter()
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen)
+  const handleLogin = () => {
+    setShowLoginModal(true)
   }
 
-  const handleLogout = () => {
-    // 清除登录状态
-    setLoggedIn(false)
-
-    // 重定向到首页
+  const handleAccountSelection = (email: string) => {
+    setShowLoginModal(false)
+    setIsLoggedIn(true)
+    // Simulate redirect to current page
     router.push("/")
+  }
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen)
   }
 
   return (
@@ -66,7 +76,7 @@ export default function Header() {
               className="mr-2 h-6 w-auto sm:h-7 md:h-8"
             />
             <a
-              href="/home"
+              href="/"
               className="cursor-pointer text-lg font-semibold text-gray-900 dark:text-white sm:text-xl md:ml-2 md:text-2xl"
             >
               Co-pilot
@@ -77,18 +87,13 @@ export default function Header() {
               {/* 这里放置大屏幕下的导航项目 */}
               {isLoggedIn ? (
                 <div className="flex items-center justify-center gap-4">
-                  <a href="/issue">Issue</a>
-                  <a href="/review">Review</a>
+                  <a href="/create-issue">Issue</a>
+                  {/* <a href="/review-issue">Review</a> */}
                   <DropdownMenu>
                     <DropdownMenuTrigger>
                       <Avatar>
-                        <AvatarImage
-                          className="max-w-8"
-                          src={user?.avatar || "/avatar.png"}
-                        />
-                        <AvatarFallback>
-                          {user?.username?.charAt(0).toUpperCase() || "U"}
-                        </AvatarFallback>
+                        <AvatarImage className="max-w-8" src={"/avatar.png"} />
+                        <AvatarFallback>"U"</AvatarFallback>
                       </Avatar>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56">
@@ -165,7 +170,7 @@ export default function Header() {
                         <span>API</span>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleLogout}>
+                      <DropdownMenuItem>
                         <LogOut className="mr-2 h-4 w-4" />
                         <span>Log out</span>
                         <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
@@ -174,16 +179,21 @@ export default function Header() {
                   </DropdownMenu>
                 </div>
               ) : (
-                <Button>Login</Button>
+                <Button onClick={handleLogin}>Login</Button>
               )}
             </div>
             <ModeToggle />
             <div className="sm:hidden">
-              <Button onClick={toggleMenu}>☰</Button>
+              <Button onClick={toggleMobileMenu}>☰</Button>
             </div>
           </div>
         </div>
-        {isOpen && <MobileMenu />}
+        {isMobileMenuOpen && <MobileMenu />}
+        <LoginModal
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+          onAccountSelect={handleAccountSelection}
+        />
       </div>
     </nav>
   )
@@ -211,5 +221,35 @@ const MobileMenu = () => {
         Review
       </a>
     </div>
+  )
+}
+
+function LoginModal({ isOpen, onClose, onAccountSelect }) {
+  const fakeEmails = ["tom.jerry@test.example.com"]
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold">
+            Sign in to your account
+          </DialogTitle>
+          <DialogDescription className="text-lg">
+            Pick an account
+          </DialogDescription>
+        </DialogHeader>
+        <div className="mt-6">
+          {fakeEmails.map((email) => (
+            <div
+              key={email}
+              className="cursor-pointer rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-gray-800"
+              onClick={() => onAccountSelect(email)}
+            >
+              <p className="text-sm font-medium">{email}</p>
+            </div>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }

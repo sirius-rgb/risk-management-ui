@@ -6,7 +6,7 @@ const Rating = () => {
   const labels = ["sad", "so-so", "normal", "good", "great"]
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center justify-center  sm:justify-start">
       {labels.map((label, index) => (
         <button
           key={index}

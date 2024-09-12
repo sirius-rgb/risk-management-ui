@@ -90,7 +90,7 @@ export default function Page() {
 
       <div>
         <AlertDialog>
-          <div className="my-2 flex items-center space-x-2">
+          <div className="my-2 flex flex-col items-center justify-center space-y-2 sm:flex-row sm:justify-start sm:space-x-2 sm:space-y-0">
             <AlertDialogTrigger asChild>
               <Checkbox id="terms" checked={isAcceptTAndC} />
             </AlertDialogTrigger>
@@ -123,8 +123,10 @@ export default function Page() {
         </AlertDialog>
       </div>
 
-      <Button className="mb-4 mt-2 max-h-8 w-96">Review</Button>
-      <Feedback />
+      <div className="mt-4 flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
+        <Button className="h-8 w-full">Review</Button>
+        <Feedback />
+      </div>
     </section>
   )
 }
@@ -133,7 +135,7 @@ const Feedback = () => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive" className="my-4 ml-4 max-h-8 w-96">
+        <Button variant="destructive" className="h-8 w-full">
           Copliot Output is Erratic
         </Button>
       </AlertDialogTrigger>
