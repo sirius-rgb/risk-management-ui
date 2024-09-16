@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import router from "next/router"
+import { useStore } from "@/store"
 import {
   Cloud,
   CreditCard,
@@ -19,7 +20,6 @@ import {
   Users,
 } from "lucide-react"
 
-import { useStore } from "@/lib/store"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {

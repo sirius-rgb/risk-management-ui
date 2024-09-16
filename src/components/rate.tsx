@@ -1,4 +1,4 @@
-import { useStore } from "@/lib/store"
+import { useStore } from "@/store"
 
 const Rating = () => {
   const rating = useStore((state) => state.rating)
@@ -6,6 +6,8 @@ const Rating = () => {
 
   const setRating = useStore((state) => state.setRating)
   const setHoverRating = useStore((state) => state.setHoverRating)
+  const setFeedbackDialogOpen = useStore((state) => state.setFeedbackDialogOpen)
+
   const labels = [
     "Significantly Worse",
     "Worse",
@@ -14,6 +16,10 @@ const Rating = () => {
     "Significantly Better",
   ]
 
+  const handleRating = (index: number) => {
+    setRating(index + 1)
+    setFeedbackDialogOpen(true)
+  }
   return (
     <div className="flex items-center justify-center  sm:justify-start">
       {labels.map((label, index) => (
@@ -22,7 +28,7 @@ const Rating = () => {
           type="button"
           onMouseEnter={() => setHoverRating(index + 1)}
           onMouseLeave={() => setHoverRating(0)}
-          onClick={() => setRating(index + 1)}
+          onClick={() => handleRating(index)}
           className="focus:outline-none"
         >
           <svg

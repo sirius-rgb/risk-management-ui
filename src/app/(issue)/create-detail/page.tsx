@@ -2,10 +2,10 @@
 
 import * as React from "react"
 import { useEffect, useState } from "react"
+import { useStore } from "@/store"
 import useSWR from "swr"
 
 import { statement } from "@/lib/conts"
-import { useStore } from "@/lib/store"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -204,21 +204,32 @@ export default function Page() {
         >
           {isSubmitting ? "Reviewing..." : "Review Again"}
         </Button>
-        <Feedback />
+        <Feedback isLoading={isLoading} />
       </div>
     </section>
   )
 }
 
-const Feedback = () => {
+const Feedback = ({ isLoading }: { isLoading: boolean }) => {
+  const isFeedbackDialogOpen = useStore((state) => state.isFeedbackDialogOpen)
+  const setFeedbackDialogOpen = useStore((state) => state.setFeedbackDialogOpen)
+
   function handleFeedbackSubmit(): void {
     console.log("feedback submitted")
+    setFeedbackDialogOpen(false)
   }
 
   return (
-    <AlertDialog>
+    <AlertDialog
+      open={isFeedbackDialogOpen}
+      onOpenChange={setFeedbackDialogOpen}
+    >
       <AlertDialogTrigger asChild>
-        <Button variant="destructive" className="h-8 w-full">
+        <Button
+          variant="destructive"
+          className="h-8 w-full"
+          disabled={isLoading}
+        >
           Copliot Output is Erratic
         </Button>
       </AlertDialogTrigger>
@@ -227,8 +238,8 @@ const Feedback = () => {
           <AlertDialogTitle className="rounded-tp-2">
             Rate the output results of the RM-Copilot.
           </AlertDialogTitle>
-          <AlertDialogDescription className="rounded-tp-2">
-            You can provide you feedback here!
+          <AlertDialogDescription className="rounded-tp-2 flex gap-2">
+            Quality of the output: <Rating />
           </AlertDialogDescription>
         </AlertDialogHeader>
         <Textarea
@@ -241,7 +252,9 @@ const Feedback = () => {
           <AlertDialogCancel onClick={handleFeedbackSubmit}>
             Send
           </AlertDialogCancel>
-          <AlertDialogAction>Cancel</AlertDialogAction>
+          <AlertDialogAction onClick={() => setFeedbackDialogOpen(false)}>
+            Cancel
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -1,9 +1,9 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { useStore } from "@/store"
 import { toast } from "sonner"
 
-import { useStore } from "@/lib/store"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
 import Header from "@/components/layout/header"

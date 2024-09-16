@@ -1,6 +1,5 @@
 import { useEffect } from "react"
-
-import { useStore } from "@/lib/store"
+import { useStore } from "@/store"
 
 import { useLocalStorage } from "./useLocalStorage"
 
