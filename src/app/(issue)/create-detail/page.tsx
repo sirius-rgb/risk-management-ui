@@ -1,13 +1,10 @@
 "use client"
 
 import * as React from "react"
+import { useEffect, useState } from "react"
+import useSWR from "swr"
 
-import {
-  additionalInfo,
-  revisedDescription,
-  revisedTitle,
-  statement,
-} from "@/lib/conts"
+import { statement } from "@/lib/conts"
 import { useStore } from "@/lib/store"
 import {
   AlertDialog,
@@ -24,16 +21,72 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { SecureTextarea } from "@/components/ui/secureTextarea"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import Rating from "@/components/rate"
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
+
+const SkeletonTextarea = () => (
+  <div className="mb-4 space-y-4">
+    <Skeleton className="h-4 w-[100px]" />
+    <Skeleton className="h-20 w-full" />
+  </div>
+)
+
 export default function Page() {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { data, error, isLoading } = useSWR("/api/issue", fetcher)
+
   const proposedIssueTitle = useStore((state) => state.proposedIssueTitle)
   const proposedIssueDescription = useStore(
     (state) => state.proposedIssueDescription
   )
+  const setProposedIssueTitle = useStore((state) => state.setProposedIssueTitle)
+  const setProposedIssueDescription = useStore(
+    (state) => state.setProposedIssueDescription
+  )
+  const rated = useStore((state) => state.rated)
+
   const isAcceptTAndC = useStore((state) => state.isAcceptTAndC)
   const setAcceptTAndC = useStore((state) => state.setAcceptTAndC)
+
+  const initializeIssue = useStore((state) => state.initializeIssue)
+
+  useEffect(() => {
+    initializeIssue()
+  }, [initializeIssue])
+
+  if (error) return <div>Error!</div>
+
+  async function handleReview(): Promise<void> {
+    setIsSubmitting(true)
+    const response_score = useStore.getState().rating
+    const feedback = "test" // 您可能需要从某个输入字段获取实际的反馈内容
+
+    try {
+      const response = await fetch("/api/feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ response_score, feedback }),
+      })
+
+      if (!response.ok) {
+        throw new Error("提交反馈失败")
+      }
+
+      // 处理成功响应
+      console.log("反馈提交成功")
+      // 可以在这里添加一些用户反馈，比如显示一个成功消息
+    } catch (error) {
+      console.error("提交反馈时出错:", error)
+      // 可以在这里添加一些错误处理，比如显示一个错误消息
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <section className="m-auto mt-8 p-8 sm:px-16">
@@ -49,6 +102,7 @@ export default function Page() {
         rows={1}
         className="mb-4 mt-2 min-h-8 bg-gray-100"
         defaultValue={proposedIssueTitle}
+        onChange={(e) => setProposedIssueTitle(e.target.value)}
         placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
       />
       <Label htmlFor="title">Description of the Risk or Control Gaps</Label>
@@ -57,35 +111,54 @@ export default function Page() {
         rows={1}
         className="mb-4 mt-2 min-h-64 bg-gray-100"
         defaultValue={proposedIssueDescription}
+        onChange={(e) => setProposedIssueDescription(e.target.value)}
         placeholder="please provide details of control or risk gaps below"
       />
-      <Label htmlFor="title">Revised Issue Title</Label>
-      <Textarea
-        id="revisedTitle"
-        rows={1}
-        disabled={!isAcceptTAndC}
-        className="mb-4 mt-2 min-h-8 select-none"
-        defaultValue={revisedTitle}
-        placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
-      />
-      <Label htmlFor="title">Revised Issue Description</Label>
-      <Textarea
-        id="revisedDescription"
-        rows={1}
-        disabled={!isAcceptTAndC}
-        className="mb-4 mt-2 min-h-36 select-none"
-        defaultValue={revisedDescription}
-        placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
-      />
-      <Label htmlFor="title">Additional Information Needed</Label>
-      <SecureTextarea
-        id="title"
-        rows={1}
-        disabled={!isAcceptTAndC}
-        defaultValue={additionalInfo}
-        className="mb-4 mt-2 min-h-32"
-        placeholder={`The LLM will generate the additional information needed for the issue creation`}
-      />
+      {isLoading ? (
+        <SkeletonTextarea />
+      ) : (
+        <>
+          <Label htmlFor="title">Revised Issue Title</Label>
+          <Textarea
+            id="revisedTitle"
+            rows={1}
+            disabled={!isAcceptTAndC}
+            className="mb-4 mt-2 min-h-8 select-none"
+            defaultValue={data.data.revised_issue_title}
+            placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
+          />
+        </>
+      )}
+      {isLoading ? (
+        <SkeletonTextarea />
+      ) : (
+        <>
+          <Label htmlFor="title">Revised Issue Description</Label>
+          <Textarea
+            id="revisedDescription"
+            rows={1}
+            disabled={!isAcceptTAndC}
+            className="mb-4 mt-2 min-h-36 select-none"
+            defaultValue={data.data.revised_issue_description}
+            placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
+          />
+        </>
+      )}
+      {isLoading ? (
+        <SkeletonTextarea />
+      ) : (
+        <>
+          <Label htmlFor="title">Additional Information Needed</Label>
+          <SecureTextarea
+            id="title"
+            rows={1}
+            disabled={!isAcceptTAndC}
+            defaultValue={data.data.additional_information_needed}
+            className="mb-4 mt-2 min-h-32"
+            placeholder={`The LLM will generate the additional information needed for the issue creation`}
+          />
+        </>
+      )}
       <Rating />
 
       <div>
@@ -124,7 +197,13 @@ export default function Page() {
       </div>
 
       <div className="mt-4 flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
-        <Button className="h-8 w-full">Review</Button>
+        <Button
+          className="h-8 w-full"
+          disabled={!(isAcceptTAndC && rated) || isSubmitting}
+          onClick={handleReview}
+        >
+          {isSubmitting ? "Reviewing..." : "Review Again"}
+        </Button>
         <Feedback />
       </div>
     </section>
@@ -132,6 +211,10 @@ export default function Page() {
 }
 
 const Feedback = () => {
+  function handleFeedbackSubmit(): void {
+    console.log("feedback submitted")
+  }
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -155,7 +238,9 @@ const Feedback = () => {
           placeholder="Please provide your feedback here!"
         />
         <AlertDialogFooter>
-          <AlertDialogCancel>Send</AlertDialogCancel>
+          <AlertDialogCancel onClick={handleFeedbackSubmit}>
+            Send
+          </AlertDialogCancel>
           <AlertDialogAction>Cancel</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

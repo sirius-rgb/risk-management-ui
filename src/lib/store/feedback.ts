@@ -1,6 +1,7 @@
 import { StateCreator } from "zustand"
 
-export interface Rate {
+export interface Feedback {
+  feedback: string
   rating: number
   hoverRating: number
   rated: boolean
@@ -8,10 +9,14 @@ export interface Rate {
   setHoverRating: (rating: number) => void
 }
 
-export const createRateSlice: StateCreator<Rate> = (set) => ({
-  rating: 5,
-  hoverRating: 5,
+export const createFeedbackSlice: StateCreator<Feedback> = (set) => ({
+  feedback: "",
+  rating: 0,
+  hoverRating: 0,
   rated: false,
+  setFeedback(feedback) {
+    set({ feedback })
+  },
   setRating(rating) {
     set({ rating, rated: true })
   },

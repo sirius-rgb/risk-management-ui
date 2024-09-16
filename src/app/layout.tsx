@@ -1,7 +1,5 @@
 import "@/styles/globals.css"
 
-// import '../styles/index.css'
-
 import type { PropsWithChildren } from "react"
 import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
@@ -68,7 +66,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function RootLayout({ children }: PropsWithChildren) {
+export default async function RootLayout({ children }: RootLayoutProps) {
   return (
     <>
       <html lang="en" suppressHydrationWarning>

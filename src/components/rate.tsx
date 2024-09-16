@@ -1,9 +1,18 @@
-import { useState } from "react"
+import { useStore } from "@/lib/store"
 
 const Rating = () => {
-  const [rating, setRating] = useState(5)
-  const [hoverRating, setHoverRating] = useState(5)
-  const labels = ["sad", "so-so", "normal", "good", "great"]
+  const rating = useStore((state) => state.rating)
+  const hoverRating = useStore((state) => state.hoverRating)
+
+  const setRating = useStore((state) => state.setRating)
+  const setHoverRating = useStore((state) => state.setHoverRating)
+  const labels = [
+    "Significantly Worse",
+    "Worse",
+    "Similar",
+    "Better",
+    "Significantly Better",
+  ]
 
   return (
     <div className="flex items-center justify-center  sm:justify-start">
@@ -31,11 +40,14 @@ const Rating = () => {
           </svg>
         </button>
       ))}
+
       <p className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400">
         {hoverRating || rating
           ? labels[(hoverRating || rating) - 1]
           : "No rating yet"}
       </p>
+      {/* Please rate the quality of the output: */}
+      {/* <span className="mx-2">Quality of output</span> */}
     </div>
   )
 }

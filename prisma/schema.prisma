@@ -16,22 +16,25 @@ model User {
   password String
 }
 
-model Issue {
+model Feedback {
   id        Int      @id @default(autoincrement())
-  title     String
-  description   String
-  revisedTitle String
-  revisedDescription String
-  AdditionalInfo String
+  request_id   String
+  response_score     Int
+  feedback   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Feedback {
-  id        Int      @id @default(autoincrement())
-  userName   String
-  rate     Int
-  description   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+
+// model Issue {
+//   id        Int      @id @default(autoincrement())
+//   issue_id     String
+//   request_id   String 
+//   Status       枚举 
+//   description   String
+//   revisedTitle String
+//   revisedDescription String
+//   AdditionalInfo String
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }

@@ -4,11 +4,13 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import { useStore } from "@/lib/store"
+import { useIssueStore } from "@/hooks/useIssueStore"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 export default function Page() {
+  const { proposedIssueTitle, proposedIssueDescription } = useIssueStore()
   const router = useRouter()
   const setProposedIssueTitle = useStore((state) => state.setProposedIssueTitle)
   const setProposedIssueDescription = useStore(
@@ -49,6 +51,7 @@ export default function Page() {
         rows={1}
         className="mb-4 mt-2 min-h-8"
         placeholder="e.g. Inadequate Access Control for Sensitive Data"
+        defaultValue={proposedIssueTitle}
         onChange={(e) => setProposedIssueTitle(e.target.value)}
       />
 
@@ -58,6 +61,7 @@ export default function Page() {
       <Textarea
         id="description"
         className="mb-4 mt-2 min-h-64"
+        defaultValue={proposedIssueDescription}
         placeholder="e.g. The current access control mechanisms in place for sensitive data within the organization are inadequate, allowing unauthorized personnel to potentially access confidential information. This gap could lead to data breaches, unauthorized data manipulation, and a loss of customer trust. The lack of role-based access controls (RBAC) and periodic access reviews exacerbates this risk, making it imperative to strengthen access policies and implement stricter data governance practices."
         onChange={(e) => setProposedIssueDescription(e.target.value)}
       />
