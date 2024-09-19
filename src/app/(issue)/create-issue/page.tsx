@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useStore } from "@/store"
 import { toast } from "sonner"
@@ -16,53 +17,71 @@ interface IssueData {
 }
 
 export default function Page() {
-  const fetcher = (url: string, { arg }: { arg: IssueData }) =>
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(arg),
-    }).then((res) => res.json())
-
-  const { trigger } = useSWRMutation<any, Error, string, IssueData>(
-    "https://www.example.com/v1/chat/general_chat",
-    fetcher
-  )
-
-  const { proposedIssueTitle, proposedIssueDescription } = useIssueStore()
   const router = useRouter()
-  const setProposedIssueTitle = useStore((state) => state.setProposedIssueTitle)
-  const setProposedIssueDescription = useStore(
-    (state) => state.setProposedIssueDescription
-  )
-  const handleSubmit = async () => {
-    const title = (document.getElementById("title") as HTMLTextAreaElement)
-      .value
-    const description = (
-      document.getElementById("description") as HTMLTextAreaElement
-    ).value
+  const {
+    proposedIssueTitle,
+    proposedIssueDescription,
+    setProposedIssueTitle,
+    setProposedIssueDescription,
+    setIsIssueLoading,
+    setError,
+    setResponseData,
+    setIssueId,
+  } = useStore()
 
-    if (!title.trim()) {
+  // 在组件加载时重置 title 和 description
+  useEffect(() => {
+    setProposedIssueTitle("")
+    setProposedIssueDescription("")
+    setIssueId(null)
+    setResponseData(null)
+  }, [
+    setProposedIssueTitle,
+    setProposedIssueDescription,
+    setIssueId,
+    setResponseData,
+  ])
+
+  const handleSubmit = async () => {
+    if (!proposedIssueTitle.trim()) {
       toast.error("Please enter the issue title")
       return
     }
 
-    if (!description.trim()) {
+    if (!proposedIssueDescription.trim()) {
       toast.error("Please enter the issue description")
       return
     }
+    setIsIssueLoading(true)
+    setError(null)
     try {
-      await trigger({
-        issue_title: title,
-        issue_description: description,
+      const response = await fetch("/api/issue", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          issue_title: proposedIssueTitle,
+          issue_description: proposedIssueDescription,
+        }),
       })
-      setProposedIssueTitle(title)
-      setProposedIssueDescription(description)
+
+      if (!response.ok) {
+        throw new Error("Failed to create issue")
+      }
+
+      const data = await response.json()
+      setResponseData(data)
+      setIssueId(data.data.issue_id)
       router.push("/create-detail")
     } catch (error) {
       console.error("create issue error:", error)
-      toast.error("there is an error when creating issue, please try again")
+      setError("There was an error when creating the issue. Please try again.")
+      toast.error(
+        "There was an error when creating the issue. Please try again."
+      )
+    } finally {
+      setIsIssueLoading(false)
     }
   }
   return (

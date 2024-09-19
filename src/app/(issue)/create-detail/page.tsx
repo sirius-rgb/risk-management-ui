@@ -4,7 +4,9 @@ import * as React from "react"
 import { useEffect, useState } from "react"
 import { useStore } from "@/store"
 import useSWR, { mutate } from "swr"
+import useSWRMutation from "swr/mutation"
 
+import { issueFetcher } from "@/lib/api"
 import { statement } from "@/lib/conts"
 import {
   AlertDialog,
@@ -25,8 +27,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import Rating from "@/components/rate"
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
-
 const SkeletonTextarea = () => (
   <div className="mb-4 space-y-4">
     <Skeleton className="h-4 w-[100px]" />
@@ -35,23 +35,27 @@ const SkeletonTextarea = () => (
 )
 
 export default function Page() {
+  const {
+    proposedIssueTitle,
+    proposedIssueDescription,
+    issueId,
+    rated,
+    isIssueLoading,
+    isAcceptTAndC,
+    error,
+    responseData,
+    setProposedIssueTitle,
+    setProposedIssueDescription,
+    setIsIssueLoading,
+    setError,
+    setResponseData,
+    setIssueId,
+    setRating,
+    setAcceptTAndC,
+    initializeIssue,
+  } = useStore()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { data, error, isLoading } = useSWR("/api/issue", fetcher)
-
-  const proposedIssueTitle = useStore((state) => state.proposedIssueTitle)
-  const proposedIssueDescription = useStore(
-    (state) => state.proposedIssueDescription
-  )
-  const setProposedIssueTitle = useStore((state) => state.setProposedIssueTitle)
-  const setProposedIssueDescription = useStore(
-    (state) => state.setProposedIssueDescription
-  )
-  const rated = useStore((state) => state.rated)
-
-  const isAcceptTAndC = useStore((state) => state.isAcceptTAndC)
-  const setAcceptTAndC = useStore((state) => state.setAcceptTAndC)
-
-  const initializeIssue = useStore((state) => state.initializeIssue)
+  const { trigger, isMutating } = useSWRMutation("/api/issue", issueFetcher)
 
   useEffect(() => {
     initializeIssue()
@@ -61,49 +65,21 @@ export default function Page() {
 
   async function handleReview(): Promise<void> {
     setIsSubmitting(true)
-    const response_score = useStore.getState().rating
-    const feedback = "test" // 您可能需要从某个输入字段获取实际的反馈内容
-
+    setAcceptTAndC(false)
+    setRating(0)
     try {
-      const response = await fetch("/api/issue", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ response_score, feedback }),
+      await trigger({
+        issue_id: issueId || undefined,
+        issue_title: proposedIssueTitle,
+        issue_description: proposedIssueDescription,
       })
-
-      if (!response.ok) {
-        throw new Error("提交反馈失败")
-      }
-
-      // 处理成功响应
-      console.log("反馈提交成功")
-
-      // 重置评分
-      useStore.getState().setRating(0)
-
-      // 清空反馈输入框
-      const feedbackTextarea = document.getElementById(
-        "feedback"
-      ) as HTMLTextAreaElement
-      if (feedbackTextarea) {
-        feedbackTextarea.value = ""
-      }
-
-      // 重新触发 SWR 请求
-      await mutate("/api/issue")
     } catch (error) {
-      console.error("提交反馈时出错:", error)
-      // 可以在这里添加一些错误处理，比如显示一个错误消息
+      console.error("review issue error:", error)
+      setError("There was an error when reviewing the issue. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
   }
-
-  // async function handleFeedback(): Promise<void> {
-  //   mutate("/api/feedback")
-  // }
 
   return (
     <section className="m-auto mt-8 p-8 sm:px-16">
@@ -120,7 +96,7 @@ export default function Page() {
         className="mb-4 mt-2 min-h-8 bg-gray-100"
         defaultValue={proposedIssueTitle}
         onChange={(e) => setProposedIssueTitle(e.target.value)}
-        placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
+        placeholder="please type Proposed Issue Title here"
       />
       <Label htmlFor="title">Description of the Risk or Control Gaps</Label>
       <Textarea
@@ -131,7 +107,7 @@ export default function Page() {
         onChange={(e) => setProposedIssueDescription(e.target.value)}
         placeholder="please provide details of control or risk gaps below"
       />
-      {isLoading ? (
+      {isMutating ? (
         <SkeletonTextarea />
       ) : (
         <>
@@ -141,12 +117,12 @@ export default function Page() {
             rows={1}
             disabled={!isAcceptTAndC}
             className="mb-4 mt-2 min-h-8 select-none"
-            defaultValue={data.data.revised_issue_title}
+            defaultValue={responseData?.data?.revised_issue_title || ""}
             placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
           />
         </>
       )}
-      {isLoading ? (
+      {isMutating ? (
         <SkeletonTextarea />
       ) : (
         <>
@@ -156,12 +132,12 @@ export default function Page() {
             rows={1}
             disabled={!isAcceptTAndC}
             className="mb-4 mt-2 min-h-36 select-none"
-            defaultValue={data.data.revised_issue_description}
+            defaultValue={responseData?.data?.revised_issue_description || ""}
             placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
           />
         </>
       )}
-      {isLoading ? (
+      {isMutating ? (
         <SkeletonTextarea />
       ) : (
         <>
@@ -170,7 +146,9 @@ export default function Page() {
             id="title"
             rows={1}
             disabled={!isAcceptTAndC}
-            defaultValue={data.data.additional_information_needed}
+            defaultValue={
+              responseData?.data?.additional_information_needed || ""
+            }
             className="mb-4 mt-2 min-h-32"
             placeholder={`The LLM will generate the additional information needed for the issue creation`}
           />
@@ -222,7 +200,7 @@ export default function Page() {
           {isSubmitting ? "Reviewing..." : "Review Again"}
         </Button>
         <Feedback
-          isLoading={isLoading}
+          isLoading={isMutating}
           rating={useStore((state) => state.rating)}
         />
       </div>
