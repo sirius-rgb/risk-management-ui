@@ -25,16 +25,14 @@ model Feedback {
   updatedAt DateTime @updatedAt
 }
 
-
-// model Issue {
-//   id        Int      @id @default(autoincrement())
-//   issue_id     String
-//   request_id   String 
-//   Status       枚举 
-//   description   String
-//   revisedTitle String
-//   revisedDescription String
-//   AdditionalInfo String
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+model Issue {
+  id                  Int      @id @default(autoincrement())
+  issue_id            String   @unique
+  issue_title         String
+  issue_description   String
+  revised_issue_title String
+  revised_issue_description String
+  additional_info           String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}

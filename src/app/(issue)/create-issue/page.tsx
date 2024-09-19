@@ -3,20 +3,40 @@
 import { useRouter } from "next/navigation"
 import { useStore } from "@/store"
 import { toast } from "sonner"
+import useSWRMutation from "swr/mutation"
 
 import { useIssueStore } from "@/hooks/useIssueStore"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
+interface IssueData {
+  issue_title: string
+  issue_description: string
+}
+
 export default function Page() {
+  const fetcher = (url: string, { arg }: { arg: IssueData }) =>
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(arg),
+    }).then((res) => res.json())
+
+  const { trigger } = useSWRMutation<any, Error, string, IssueData>(
+    "https://www.example.com/v1/chat/general_chat",
+    fetcher
+  )
+
   const { proposedIssueTitle, proposedIssueDescription } = useIssueStore()
   const router = useRouter()
   const setProposedIssueTitle = useStore((state) => state.setProposedIssueTitle)
   const setProposedIssueDescription = useStore(
     (state) => state.setProposedIssueDescription
   )
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const title = (document.getElementById("title") as HTMLTextAreaElement)
       .value
     const description = (
@@ -32,10 +52,18 @@ export default function Page() {
       toast.error("Please enter the issue description")
       return
     }
-
-    setProposedIssueTitle(title)
-    setProposedIssueDescription(description)
-    router.push("/create-detail")
+    try {
+      await trigger({
+        issue_title: title,
+        issue_description: description,
+      })
+      setProposedIssueTitle(title)
+      setProposedIssueDescription(description)
+      router.push("/create-detail")
+    } catch (error) {
+      console.error("create issue error:", error)
+      toast.error("there is an error when creating issue, please try again")
+    }
   }
   return (
     <section className="m-auto mt-8 p-8 sm:px-16">

@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useEffect, useState } from "react"
 import { useStore } from "@/store"
-import useSWR from "swr"
+import useSWR, { mutate } from "swr"
 
 import { statement } from "@/lib/conts"
 import {
@@ -65,7 +65,7 @@ export default function Page() {
     const feedback = "test" // 您可能需要从某个输入字段获取实际的反馈内容
 
     try {
-      const response = await fetch("/api/feedback", {
+      const response = await fetch("/api/issue", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -79,7 +79,20 @@ export default function Page() {
 
       // 处理成功响应
       console.log("反馈提交成功")
-      // 可以在这里添加一些用户反馈，比如显示一个成功消息
+
+      // 重置评分
+      useStore.getState().setRating(0)
+
+      // 清空反馈输入框
+      const feedbackTextarea = document.getElementById(
+        "feedback"
+      ) as HTMLTextAreaElement
+      if (feedbackTextarea) {
+        feedbackTextarea.value = ""
+      }
+
+      // 重新触发 SWR 请求
+      await mutate("/api/issue")
     } catch (error) {
       console.error("提交反馈时出错:", error)
       // 可以在这里添加一些错误处理，比如显示一个错误消息
@@ -87,6 +100,10 @@ export default function Page() {
       setIsSubmitting(false)
     }
   }
+
+  // async function handleFeedback(): Promise<void> {
+  //   mutate("/api/feedback")
+  // }
 
   return (
     <section className="m-auto mt-8 p-8 sm:px-16">
@@ -204,13 +221,22 @@ export default function Page() {
         >
           {isSubmitting ? "Reviewing..." : "Review Again"}
         </Button>
-        <Feedback isLoading={isLoading} />
+        <Feedback
+          isLoading={isLoading}
+          rating={useStore((state) => state.rating)}
+        />
       </div>
     </section>
   )
 }
 
-const Feedback = ({ isLoading }: { isLoading: boolean }) => {
+const Feedback = ({
+  isLoading,
+  rating,
+}: {
+  isLoading: boolean
+  rating: number
+}) => {
   const isFeedbackDialogOpen = useStore((state) => state.isFeedbackDialogOpen)
   const setFeedbackDialogOpen = useStore((state) => state.setFeedbackDialogOpen)
 
@@ -238,9 +264,8 @@ const Feedback = ({ isLoading }: { isLoading: boolean }) => {
           <AlertDialogTitle className="rounded-tp-2">
             Rate the output results of the RM-Copilot.
           </AlertDialogTitle>
-          <AlertDialogDescription className="rounded-tp-2 flex gap-2">
-            Quality of the output: <Rating />
-          </AlertDialogDescription>
+          <AlertDialogDescription className="rounded-tp-2"></AlertDialogDescription>
+          Quality of the output: <Rating />
         </AlertDialogHeader>
         <Textarea
           id="feedback"
