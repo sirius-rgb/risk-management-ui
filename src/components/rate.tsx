@@ -18,7 +18,7 @@ const Rating = () => {
 
   const handleRating = (index: number) => {
     setRating(index + 1)
-    setFeedbackDialogOpen(true)
+    // setFeedbackDialogOpen(true)
   }
   return (
     <div className="flex items-center justify-center  sm:justify-start">

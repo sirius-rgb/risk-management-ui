@@ -42,6 +42,8 @@ Context - ${nanoidStr()}`,
 }
 
 export async function POST(request: Request) {
+  await new Promise((resolve) => setTimeout(resolve, 1500))
+
   const { issue_title, issue_description } = await request.json()
   console.log(issue_title, issue_description)
 
@@ -53,7 +55,7 @@ export async function POST(request: Request) {
     data: {
       issue_id: issue_id ?? nanoid(6),
       request_id,
-      revised_issue_title: "TM Operations: Quality of Case Analysis",
+      revised_issue_title: `TM Operations: Quality of Case Analysis - ${nanoid(6)}`,
       revised_issue_description:
         "Condition - Lorem ipsum\nCriteria - Dolor sit amet\nCause - Consectetur adipiscing\nConsequence - Elit sed do eiusmod\nContext - Tempor incididunt",
       additional_information_needed:

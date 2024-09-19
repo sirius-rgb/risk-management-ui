@@ -68,16 +68,22 @@ export default function Page() {
     setAcceptTAndC(false)
     setRating(0)
     try {
-      await trigger({
+      const result = await trigger({
         issue_id: issueId || undefined,
         issue_title: proposedIssueTitle,
         issue_description: proposedIssueDescription,
       })
+      setIsIssueLoading(true)
+      if (result && result.data) {
+        setResponseData(result)
+        setIssueId(result.data.issue_id)
+      }
     } catch (error) {
       console.error("review issue error:", error)
       setError("There was an error when reviewing the issue. Please try again.")
     } finally {
       setIsSubmitting(false)
+      setIsIssueLoading(false)
     }
   }
 
