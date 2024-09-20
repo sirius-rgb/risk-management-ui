@@ -42,7 +42,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdownMenu"
+} from "@/components/ui/dropdown-menu"
 import { ModeToggle } from "@/components/mode-toggle"
 
 export default function Header() {

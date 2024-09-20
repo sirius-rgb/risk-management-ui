@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/theme-provider"
 
+import { ConsoleWarningSuppress } from "./ConsoleWarningSuppress"
+
 const inter = Inter({ subsets: ["latin"] })
 
 interface RootLayoutProps {
@@ -80,6 +82,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             enableSystem
             disableTransitionOnChange
           >
+            <ConsoleWarningSuppress />
             {children}
             <Toaster />
           </ThemeProvider>
