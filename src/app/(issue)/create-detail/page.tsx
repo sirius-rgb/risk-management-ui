@@ -99,7 +99,7 @@ export default function Page() {
       <Textarea
         id="title"
         rows={1}
-        className="mb-4 mt-2 min-h-8 bg-gray-100"
+        className="mb-4 mt-2 min-h-8 bg-gray-100 dark:bg-zinc-700"
         defaultValue={proposedIssueTitle}
         onChange={(e) => setProposedIssueTitle(e.target.value)}
         placeholder="please type Proposed Issue Title here"
@@ -108,7 +108,7 @@ export default function Page() {
       <Textarea
         id="title"
         rows={1}
-        className="mb-4 mt-2 min-h-64 bg-gray-100"
+        className="mb-4 mt-2 min-h-64 bg-gray-100 dark:bg-zinc-700"
         defaultValue={proposedIssueDescription}
         onChange={(e) => setProposedIssueDescription(e.target.value)}
         placeholder="please provide details of control or risk gaps below"

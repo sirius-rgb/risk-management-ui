@@ -9,6 +9,7 @@ export const siteConfig: SiteConfig = {
   keywords: ["Next.js", "React", "Tailwind CSS", "Radix UI", "shadcn/ui"],
   url: {
     base: env.NEXT_PUBLIC_APP_URL,
+    // base: process.env.NEXT_PUBLIC_APP_URL || "",
     author: "https://bento.me/keqing",
   },
   links: {
