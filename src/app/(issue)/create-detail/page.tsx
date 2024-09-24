@@ -2,8 +2,9 @@
 
 import * as React from "react"
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { useStore } from "@/store"
-import useSWR, { mutate } from "swr"
+import { toast } from "sonner"
 import useSWRMutation from "swr/mutation"
 
 import { issueFetcher } from "@/lib/api"
@@ -56,6 +57,8 @@ export default function Page() {
   } = useStore()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { trigger, isMutating } = useSWRMutation("/api/issue", issueFetcher)
+  const router = useRouter()
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   useEffect(() => {
     initializeIssue()
@@ -178,8 +181,8 @@ export default function Page() {
 
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle className="rounded-t border-b p-2 dark:border-gray-600">
-                Are you absolutely sure?
+              <AlertDialogTitle className="rounded-t border-b py-2 text-red-600 dark:border-gray-600">
+                Terms and condition
               </AlertDialogTitle>
               <AlertDialogDescription className="rounded-tp-2">
                 {statement}
@@ -223,10 +226,22 @@ const Feedback = ({
 }) => {
   const isFeedbackDialogOpen = useStore((state) => state.isFeedbackDialogOpen)
   const setFeedbackDialogOpen = useStore((state) => state.setFeedbackDialogOpen)
+  const sendFeedback = useStore((state) => state.sendFeedback)
+  const feedback = useStore((state) => state.feedback)
+  const setFeedback = useStore((state) => state.setFeedback)
+  const router = useRouter()
 
-  function handleFeedbackSubmit(): void {
-    console.log("feedback submitted")
-    setFeedbackDialogOpen(false)
+  const handleFeedbackSubmit = async (event: any) => {
+    if (feedback.length === 0) {
+      event.preventDefault()
+      toast("Please provide feedback")
+      // setFeedbackDialogOpen(true)
+      return
+    } else {
+      setFeedbackDialogOpen(false)
+      await sendFeedback(rating, "test feedback", "I-1024", "R-2048")
+      router.push("/create-issue")
+    }
   }
 
   return (
@@ -246,19 +261,62 @@ const Feedback = ({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="rounded-tp-2">
-            Rate the output results of the RM-Copilot.
+            Error Reporting
           </AlertDialogTitle>
-          <AlertDialogDescription className="rounded-tp-2"></AlertDialogDescription>
-          Quality of the output: <Rating />
+          <AlertDialogDescription className="rounded-tp-2 max-h-72 overflow-y-scroll">
+            <p>
+              This section is used to report instances where you believe the AI
+              is behaving erratically or is providing outputs that contain
+              material errors or bias or are false, misleading and dangerous.
+            </p>
+            <ul>
+              <p className="py-2">These errors may includes: </p>
+              <li>- Hallucinations</li>
+              <li>- Factiually woring and/or logically unsound outpus</li>
+              <li>
+                - Creating and referencing nonexistent policies, procedures, and
+                processes
+              </li>
+              <li>Providing responses in another language</li>
+              <li>
+                Swearing or responding in harmful and/or unprofession language
+              </li>
+              <li>Threatening users</li>
+              <li>
+                Advising users to break the laws or take unethical course of
+                action
+              </li>
+              <li>
+                Providing biased response, including gender bias, ageism,
+                racism, etc
+              </li>
+            </ul>
+            <p className="py-2">
+              Please note that the segment should not be used to provided
+              general feedback on the tool.
+            </p>
+            <p className="py-1">Materiality of error:</p>
+            <p className="py-1">
+              Low Risk, Medium Risk, High Risk, Very High Risk
+            </p>
+            <p className="py-1">Crosses</p>
+            <p className="py-1">Green, Amberm, Red, Bright Red</p>
+          </AlertDialogDescription>
+          <div className="flex gap-2 text-gray-400">
+            {" "}
+            Quality of the output: <Rating />
+          </div>
         </AlertDialogHeader>
         <Textarea
           id="feedback"
           rows={1}
           className="mb-4 mt-2 min-h-32"
           placeholder="Please provide your feedback here!"
+          value={feedback}
+          onChange={(e) => setFeedback(e.target.value)}
         />
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={handleFeedbackSubmit}>
+          <AlertDialogCancel onClick={(e) => handleFeedbackSubmit(e)}>
             Send
           </AlertDialogCancel>
           <AlertDialogAction onClick={() => setFeedbackDialogOpen(false)}>

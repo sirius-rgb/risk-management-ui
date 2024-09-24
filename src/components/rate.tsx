@@ -1,10 +1,12 @@
 import { useStore } from "@/store"
+import useSWR from "swr"
 
 const Rating = () => {
   const rating = useStore((state) => state.rating)
   const hoverRating = useStore((state) => state.hoverRating)
 
   const setRating = useStore((state) => state.setRating)
+  const sendRating = useStore((state) => state.sendRating)
   const setHoverRating = useStore((state) => state.setHoverRating)
   const setFeedbackDialogOpen = useStore((state) => state.setFeedbackDialogOpen)
 
@@ -17,8 +19,14 @@ const Rating = () => {
   ]
 
   const handleRating = (index: number) => {
-    setRating(index + 1)
+    const score = index + 1
+    setRating(score)
     // setFeedbackDialogOpen(true)
+    // use useSWR send request to /api/feedback to record the rating
+
+    // 因为下面的方法是一个请求， 我希望给这个请求加上防抖函数，2 秒内最后一次点击才会发送请求
+    // 实现一个防抖函数 包裹 sendRating
+    sendRating(score, "This is not a good result", "I-1024", "R-2048")
   }
   return (
     <div className="flex items-center justify-center  sm:justify-start">
