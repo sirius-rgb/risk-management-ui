@@ -1,9 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import router from "next/router"
 import { useStore } from "@/store"
+import { debounce } from "lodash"
 import {
   Cloud,
   CreditCard,
@@ -20,6 +22,8 @@ import {
   Users,
 } from "lucide-react"
 
+import { components } from "@/lib/conts"
+import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -43,25 +47,57 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+  NavigationMenuViewport,
+} from "@/components/ui/navigation-menu"
+import { Icons } from "@/components/icons"
 import { ModeToggle } from "@/components/mode-toggle"
+
+import LoginModal from "./login-modal"
+import MobileMenu from "./mobile-menu"
 
 export default function Header() {
   const router = useRouter()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const showLoginModal = useStore((state) => state.showLoginModal)
-  const isLoggedIn = useStore((state) => state.isLoggedIn)
-
-  const setIsLoggedIn = useStore((state) => state.setLoggedIn)
   const setShowLoginModal = useStore((state) => state.setShowLoginModal)
+
+  const isLoggedIn = useStore((state) => state.isLoggedIn)
+  const setIsLoggedIn = useStore((state) => state.setLoggedIn)
+
   const initializeAuth = useStore((state) => state.initializeAuth)
+
+  const sendFeedback = debounce(() => {
+    console.log("Sending feedback")
+  }, 500)
 
   useEffect(() => {
     initializeAuth()
   }, [initializeAuth])
 
+  useEffect(() => {
+    // const hasAcceptedTandC = localStorage.getItem("hasAcceptedTandC")
+    // if (isLoggedIn && !hasAcceptedTandC) {
+
+    if (isLoggedIn) {
+      setTimeout(() => {
+        setShowLoginModal(true)
+      }, 500)
+    }
+  }, [isLoggedIn, setShowLoginModal])
+
   const handleLogin = () => {
-    setShowLoginModal(true)
+    setIsLoggedIn(true)
+    localStorage.setItem("isLoggedIn", "true")
   }
 
   const handleLogout = () => {
@@ -70,40 +106,41 @@ export default function Header() {
     router.push("/")
   }
 
-  const handleAccountSelection = () => {
-    setShowLoginModal(false)
-    setIsLoggedIn(true)
-    localStorage.setItem("isLoggedIn", "true")
-  }
-
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
   }
 
   return (
     <nav className="sticky top-0 z-10 border-b border-gray-200 bg-white bg-opacity-30 backdrop-blur-lg backdrop-filter dark:border-none dark:bg-transparent">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-8xl container mx-auto">
         <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center">
+          <div
+            className="flex cursor-pointer items-center "
+            onClick={() => router.push("/")}
+          >
             <img
-              src="/logo.svg"
+              // src="/logo.svg"
+              src="/logo.png"
               alt="logo"
               className="mr-2 h-6 w-auto sm:h-7 md:h-8"
             />
-            <a
-              onClick={() => router.push("/")}
-              className="cursor-pointer text-lg font-semibold text-gray-900 dark:text-white sm:text-xl md:ml-2 md:text-2xl"
-            >
-              Co-pilot
+            <a className="text-lg font-semibold text-gray-900 dark:text-white sm:text-xl md:ml-2 md:text-2xl">
+              RM Co-pilot
             </a>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-4 ">
             <div className="hidden sm:block">
               {/* 放置大屏幕下的导航项目 */}
               {isLoggedIn ? (
                 <NavBarItems handleLogout={handleLogout} />
               ) : (
-                <Button onClick={handleLogin}>Login</Button>
+                <Button
+                  variant="outline"
+                  className="bg-background hover:bg-accent"
+                  onClick={handleLogin}
+                >
+                  Login
+                </Button>
               )}
             </div>
             <ModeToggle />
@@ -112,51 +149,14 @@ export default function Header() {
             </div>
           </div>
         </div>
+        <Button onClick={sendFeedback}>Send</Button>
         {isMobileMenuOpen && <MobileMenu />}
         <LoginModal
           isOpen={showLoginModal}
           onClose={() => setShowLoginModal(false)}
-          onAccountSelect={handleAccountSelection}
         />
       </div>
     </nav>
-  )
-}
-
-const MobileMenu = () => {
-  return (
-    <div className="mt-2 space-y-2 text-center text-gray-900 hover:cursor-pointer md:hidden">
-      <a
-        onClick={() => router.push("/create-issue")}
-        className="block rounded py-2 pl-3 pr-4 text-gray-900 hover:bg-gray-100 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:p-0 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
-      >
-        Create Issue
-      </a>
-      {/* 
-      {isLoggedIn ? (
-        <a
-          onClick={handleLogout}
-          className="block rounded py-2 pl-3 pr-4 text-gray-900 hover:bg-gray-100 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:p-0 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
-        >
-          登出
-        </a>
-      ) : (
-        <a
-          onClick={handleLogin}
-          className="block rounded py-2 pl-3 pr-4 text-gray-900 hover:bg-gray-100 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:p-0 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
-        >
-          登录
-        </a>
-      )}
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        onAccountSelect={(email) => {
-          setShowLoginModal(false)
-          setLoggedIn(true)
-        }}
-      /> */}
-    </div>
   )
 }
 
@@ -167,7 +167,73 @@ interface NavBarItemsProps {
 const NavBarItems: React.FC<NavBarItemsProps> = ({ handleLogout }) => {
   return (
     <div className="flex items-center justify-center gap-4">
-      <a href="/create-issue">Create Issue</a>
+      <NavigationMenu>
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                <li className="row-span-3">
+                  <NavigationMenuLink asChild>
+                    <a
+                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                      href="/"
+                    >
+                      <Icons.logo className="h-6 w-6" />
+                      <div className="mb-2 mt-4 text-lg font-medium">
+                        Co-pilot
+                      </div>
+                      <p className="text-sm leading-tight text-muted-foreground">
+                        A generative AI assistant that helps you draft risk and
+                        control narratives. Select the task that you need help.
+                      </p>
+                    </a>
+                  </NavigationMenuLink>
+                </li>
+                <ListItem href="/docs" title="Introduction">
+                  Introduction to the Co-pilot
+                </ListItem>
+                <ListItem href="/docs/installation" title="Usage">
+                  Guide to use the Co-pilot
+                </ListItem>
+                <ListItem
+                  href="/docs/primitives/typography"
+                  title="User Conditions"
+                >
+                  User conditions and terms
+                </ListItem>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Issues</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[500px] ">
+                {components.map((component) => (
+                  <ListItem
+                    key={component.title}
+                    title={component.title}
+                    href={component.href}
+                  >
+                    {component.description}
+                  </ListItem>
+                ))}
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+          {/* <NavigationMenuItem>
+            <Link href="/docs" legacyBehavior passHref>
+              <NavigationMenuLink
+                className={navigationMenuTriggerStyle()}
+                onClick={() => router.push("/create-issue")}
+              >
+                Create Issue
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem> */}
+        </NavigationMenuList>
+      </NavigationMenu>
+
       <DropdownMenu>
         <DropdownMenuTrigger>
           <Avatar>
@@ -256,42 +322,28 @@ const NavBarItems: React.FC<NavBarItemsProps> = ({ handleLogout }) => {
   )
 }
 
-interface LoginModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onAccountSelect: (email: string) => void
-}
-
-const LoginModal: React.FC<LoginModalProps> = ({
-  isOpen,
-  onClose,
-  onAccountSelect,
-}) => {
-  const fakeEmails = ["demo.test@example.com"]
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">
-            Sign in to your account
-          </DialogTitle>
-          <DialogDescription className="text-lg">
-            Pick an account
-          </DialogDescription>
-        </DialogHeader>
-        <div>
-          {fakeEmails.map((email) => (
-            <div
-              key={email}
-              className="flex cursor-pointer rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-gray-800"
-              onClick={() => onAccountSelect(email)}
-            >
-              <User className="mr-2 h-4 w-4" />
-              <p className="text-sm font-medium">{email}</p>
-            </div>
-          ))}
-        </div>
-      </DialogContent>
-    </Dialog>
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
   )
-}
+})
+ListItem.displayName = "ListItem"

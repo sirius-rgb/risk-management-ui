@@ -8,7 +8,14 @@ import { toast } from "sonner"
 import useSWRMutation from "swr/mutation"
 
 import { issueFetcher } from "@/lib/api"
-import { statement } from "@/lib/conts"
+import {
+  additional_information_needed,
+  issue_description,
+  issue_title,
+  statement,
+  suggessted_issue_description,
+  suggessted_issue_title,
+} from "@/lib/conts"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +34,9 @@ import { SecureTextarea } from "@/components/ui/secureTextarea"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import Rating from "@/components/rate"
+
+import { FeedbackDialog } from "./feedback"
+import StartRating from "./startRate"
 
 const SkeletonTextarea = () => (
   <div className="mb-4 space-y-4">
@@ -92,13 +102,10 @@ export default function Page() {
 
   return (
     <section className="m-auto mt-8 p-8 sm:px-16">
-      <h2 className="text-4xl  font-semibold text-gray-900 dark:text-white">
+      <h2 className="mb-2 text-4xl font-semibold text-gray-900 dark:text-white">
         Issue Creation
       </h2>
-      <p className="my-3 text-sm text-gray-400">
-        Please Provide Details of Control or Risk Gaps Below
-      </p>
-      <Label htmlFor="title">Proposed Issue Title</Label>
+      <Label htmlFor="title">{issue_title}</Label>
       <Textarea
         id="title"
         rows={1}
@@ -107,7 +114,7 @@ export default function Page() {
         onChange={(e) => setProposedIssueTitle(e.target.value)}
         placeholder="please type Proposed Issue Title here"
       />
-      <Label htmlFor="title">Description of the Risk or Control Gaps</Label>
+      <Label htmlFor="title">{issue_description}</Label>
       <Textarea
         id="title"
         rows={1}
@@ -116,89 +123,10 @@ export default function Page() {
         onChange={(e) => setProposedIssueDescription(e.target.value)}
         placeholder="please provide details of control or risk gaps below"
       />
-      {isMutating ? (
-        <SkeletonTextarea />
-      ) : (
-        <>
-          <Label htmlFor="title">Revised Issue Title</Label>
-          <Textarea
-            id="revisedTitle"
-            rows={1}
-            disabled={!isAcceptTAndC}
-            className="mb-4 mt-2 min-h-8 select-none"
-            defaultValue={responseData?.data?.revised_issue_title || ""}
-            placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
-          />
-        </>
-      )}
-      {isMutating ? (
-        <SkeletonTextarea />
-      ) : (
-        <>
-          <Label htmlFor="title">Revised Issue Description</Label>
-          <Textarea
-            id="revisedDescription"
-            rows={1}
-            disabled={!isAcceptTAndC}
-            className="mb-4 mt-2 min-h-36 select-none"
-            defaultValue={responseData?.data?.revised_issue_description || ""}
-            placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
-          />
-        </>
-      )}
-      {isMutating ? (
-        <SkeletonTextarea />
-      ) : (
-        <>
-          <Label htmlFor="title">Additional Information Needed</Label>
-          <SecureTextarea
-            id="title"
-            rows={1}
-            disabled={!isAcceptTAndC}
-            defaultValue={
-              responseData?.data?.additional_information_needed || ""
-            }
-            className="mb-4 mt-2 min-h-32"
-            placeholder={`The LLM will generate the additional information needed for the issue creation`}
-          />
-        </>
-      )}
-      <Rating />
+      {isMutating ? <LoadingTextArea /> : <Area />}
 
-      <div>
-        <AlertDialog>
-          <div className="my-2 flex flex-col items-center justify-center space-y-2 sm:flex-row sm:justify-start sm:space-x-2 sm:space-y-0">
-            <AlertDialogTrigger asChild>
-              <Checkbox id="terms" checked={isAcceptTAndC} />
-            </AlertDialogTrigger>
-            <label
-              htmlFor="terms"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Accept terms and conditions
-            </label>
-          </div>
-
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle className="rounded-t border-b py-2 text-red-600 dark:border-gray-600">
-                Terms and condition
-              </AlertDialogTitle>
-              <AlertDialogDescription className="rounded-tp-2">
-                {statement}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setAcceptTAndC(true)}>
-                I accept
-              </AlertDialogCancel>
-              <AlertDialogAction onClick={() => setAcceptTAndC(false)}>
-                Cancel
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
+      <StartRating />
+      <TermsAndConditions />
 
       <div className="mt-4 flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
         <Button
@@ -208,118 +136,95 @@ export default function Page() {
         >
           {isSubmitting ? "Reviewing..." : "Review Again"}
         </Button>
-        <Feedback
+      </div>
+
+      {/* <FeedbackDialog
           isLoading={isMutating}
           rating={useStore((state) => state.rating)}
-        />
-      </div>
+        /> */}
     </section>
   )
 }
 
-const Feedback = ({
-  isLoading,
-  rating,
-}: {
-  isLoading: boolean
-  rating: number
-}) => {
-  const isFeedbackDialogOpen = useStore((state) => state.isFeedbackDialogOpen)
-  const setFeedbackDialogOpen = useStore((state) => state.setFeedbackDialogOpen)
-  const sendFeedback = useStore((state) => state.sendFeedback)
-  const feedback = useStore((state) => state.feedback)
-  const setFeedback = useStore((state) => state.setFeedback)
-  const router = useRouter()
-
-  const handleFeedbackSubmit = async (event: any) => {
-    if (feedback.length === 0) {
-      event.preventDefault()
-      toast("Please provide feedback")
-      // setFeedbackDialogOpen(true)
-      return
-    } else {
-      setFeedbackDialogOpen(false)
-      await sendFeedback(rating, "test feedback", "I-1024", "R-2048")
-      router.push("/create-issue")
-    }
-  }
-
+const LoadingTextArea = () => {
   return (
-    <AlertDialog
-      open={isFeedbackDialogOpen}
-      onOpenChange={setFeedbackDialogOpen}
-    >
-      <AlertDialogTrigger asChild>
-        <Button
-          variant="destructive"
-          className="h-8 w-full"
-          disabled={isLoading}
+    <>
+      <SkeletonTextarea />
+      <SkeletonTextarea />
+      <SkeletonTextarea />
+    </>
+  )
+}
+
+const Area = () => {
+  const isAcceptTAndC = useStore((state) => state.isAcceptTAndC)
+  const responseData = useStore((state) => state.responseData)
+  return (
+    <>
+      <Label htmlFor="title">{suggessted_issue_title}</Label>
+      <Textarea
+        id="revisedTitle"
+        rows={1}
+        disabled={!isAcceptTAndC}
+        className="mb-4 mt-2 min-h-8 select-none"
+        defaultValue={responseData?.data?.revised_issue_title || ""}
+        placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
+      />
+
+      <Label htmlFor="title">{suggessted_issue_description}</Label>
+      <Textarea
+        id="revisedDescription"
+        rows={1}
+        disabled={!isAcceptTAndC}
+        className="mb-4 mt-2 min-h-36 select-none"
+        defaultValue={responseData?.data?.revised_issue_description || ""}
+        placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
+      />
+
+      <Label htmlFor="title">{additional_information_needed}</Label>
+      <SecureTextarea
+        id="title"
+        rows={1}
+        disabled={!isAcceptTAndC}
+        defaultValue={responseData?.data?.additional_information_needed || ""}
+        className="mb-4 mt-2 min-h-32"
+        placeholder={`The LLM will generate the additional information needed for the issue creation`}
+      />
+    </>
+  )
+}
+
+const TermsAndConditions = () => {
+  const setAcceptTAndC = useStore((state) => state.setAcceptTAndC)
+  const isAcceptTAndC = useStore((state) => state.isAcceptTAndC)
+  return (
+    <AlertDialog>
+      <div className="my-2 flex flex-col items-center justify-center space-y-2 sm:flex-row sm:justify-start sm:space-x-2 sm:space-y-0">
+        <AlertDialogTrigger asChild>
+          <Checkbox id="terms" checked={isAcceptTAndC} />
+        </AlertDialogTrigger>
+        <label
+          htmlFor="terms"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
-          Copliot Output is Erratic
-        </Button>
-      </AlertDialogTrigger>
+          Accept terms and conditions
+        </label>
+      </div>
+
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className="rounded-tp-2">
-            Error Reporting
+          <AlertDialogTitle className="rounded-t border-b py-2 text-red-600 dark:border-gray-600">
+            Terms and condition
           </AlertDialogTitle>
-          <AlertDialogDescription className="rounded-tp-2 max-h-72 overflow-y-scroll">
-            <p>
-              This section is used to report instances where you believe the AI
-              is behaving erratically or is providing outputs that contain
-              material errors or bias or are false, misleading and dangerous.
-            </p>
-            <ul>
-              <p className="py-2">These errors may includes: </p>
-              <li>- Hallucinations</li>
-              <li>- Factiually woring and/or logically unsound outpus</li>
-              <li>
-                - Creating and referencing nonexistent policies, procedures, and
-                processes
-              </li>
-              <li>Providing responses in another language</li>
-              <li>
-                Swearing or responding in harmful and/or unprofession language
-              </li>
-              <li>Threatening users</li>
-              <li>
-                Advising users to break the laws or take unethical course of
-                action
-              </li>
-              <li>
-                Providing biased response, including gender bias, ageism,
-                racism, etc
-              </li>
-            </ul>
-            <p className="py-2">
-              Please note that the segment should not be used to provided
-              general feedback on the tool.
-            </p>
-            <p className="py-1">Materiality of error:</p>
-            <p className="py-1">
-              Low Risk, Medium Risk, High Risk, Very High Risk
-            </p>
-            <p className="py-1">Crosses</p>
-            <p className="py-1">Green, Amberm, Red, Bright Red</p>
+          <AlertDialogDescription className="rounded-tp-2">
+            {statement}
           </AlertDialogDescription>
-          <div className="flex gap-2 text-gray-400">
-            {" "}
-            Quality of the output: <Rating />
-          </div>
         </AlertDialogHeader>
-        <Textarea
-          id="feedback"
-          rows={1}
-          className="mb-4 mt-2 min-h-32"
-          placeholder="Please provide your feedback here!"
-          value={feedback}
-          onChange={(e) => setFeedback(e.target.value)}
-        />
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={(e) => handleFeedbackSubmit(e)}>
-            Send
+          <AlertDialogCancel onClick={() => setAcceptTAndC(true)}>
+            I accept
           </AlertDialogCancel>
-          <AlertDialogAction onClick={() => setFeedbackDialogOpen(false)}>
+          <AlertDialogAction onClick={() => setAcceptTAndC(false)}>
             Cancel
           </AlertDialogAction>
         </AlertDialogFooter>

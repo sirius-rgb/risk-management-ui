@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { useStore } from "@/store"
 import { toast } from "sonner"
 
+import { hero_description, hero_title } from "@/lib/conts"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
 import Header from "@/components/layout/header"
@@ -20,6 +21,30 @@ const heros = [
     href: "/review-issue",
     content: `Assist in issue creation to the framework requirements`,
     name: "review",
+  },
+  {
+    title: "Vulnerability drafting",
+    href: "/review-issue",
+    content: `Review and enhance an Operational Resilence Vulnerability description`,
+    name: "Draft",
+  },
+  {
+    title: "Issue Thematic Analysis",
+    href: "/review-issue",
+    content: `Analyse and suggest themes in the causes of issues`,
+    name: "Draft",
+  },
+  {
+    title: "Control Assessment Drafting",
+    href: "/review-issue",
+    content: `Draft control effectiveness rationable based on assosiated issues`,
+    name: "Draft",
+  },
+  {
+    title: "Control Monitoring Drafting",
+    href: "/review-issue",
+    content: `Draft the control monitoring description considering linked issues and KCIs`,
+    name: "Draft",
   },
 ]
 
@@ -56,7 +81,7 @@ export default function Page() {
       <Header />
       <Hero />
       <Tabs />
-      <Tasks />
+      {/* <Tasks /> */}
     </>
   )
 }
@@ -79,11 +104,11 @@ const Hero = () => {
         </div>
         <div className="mx-auto max-w-2xl py-24 sm:py-28 lg:py-32">
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-              What do you need help with?
+            <h1 className="text-wrap text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl md:text-nowrap md:text-6xl">
+              {hero_title}
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
-              Select the task that you need help with
+              {hero_description}
             </p>
           </div>
         </div>
@@ -109,18 +134,21 @@ const Tabs = () => {
   const router = useRouter()
   return (
     <section className="m-auto mt-4 p-4 sm:px-16">
-      <div className="mx-auto grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="mx-auto grid w-full grid-cols-1  gap-4 sm:grid-cols-2">
         {heros.map((hero, index) => (
           <a
             key={index}
-            className="group flex flex-col items-center rounded-lg border border-transparent px-5 py-4 text-center transition-colors hover:border-gray-300 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30 sm:block sm:items-start sm:text-left"
+            className="group relative flex flex-col place-items-center items-center justify-center rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30 sm:block sm:items-start sm:text-left"
           >
-            <h2 className="mb-3 text-2xl font-semibold">{hero.title}</h2>
-            <p className="mb-3 max-w-[30ch] opacity-50 dark:text-gray-200">
+            <h2 className="relative z-40 mb-3 text-center text-2xl font-semibold">
+              {hero.title}
+            </h2>
+            <p className="mx-auto mb-3 max-w-[30ch] text-center opacity-50 dark:text-gray-200">
               {hero.content}
             </p>
             <Button
-              className="relative z-10"
+              className="mx-auto block text-center"
+              disabled={hero.name === "create" ? false : true}
               {...(isLoggedIn
                 ? { onClick: () => router.push(hero.href) }
                 : {
@@ -129,6 +157,9 @@ const Tabs = () => {
             >
               {hero.name}
             </Button>
+            {hero.name === "create" ? null : (
+              <Icons.lock className="absolute right-[45%] top-[20%] -z-10 h-16 w-16 text-gray-200 dark:text-gray-800" />
+            )}
           </a>
         ))}
       </div>
