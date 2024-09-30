@@ -74,7 +74,12 @@ export default function Header() {
   const isLoggedIn = useStore((state) => state.isLoggedIn)
   const setIsLoggedIn = useStore((state) => state.setLoggedIn)
 
+  const isAcceptTAndC = useStore((state) => state.isAcceptTAndC)
   const initializeAuth = useStore((state) => state.initializeAuth)
+
+  console.log("isLoggedIn", isLoggedIn)
+  console.log("showLoginModal", showLoginModal)
+  console.log("isAcceptTAndC", isAcceptTAndC)
 
   const sendFeedback = debounce(() => {
     console.log("Sending feedback")
@@ -85,12 +90,18 @@ export default function Header() {
   }, [initializeAuth])
 
   useEffect(() => {
-    // const hasAcceptedTandC = localStorage.getItem("hasAcceptedTandC")
+    const hasAcceptedTandC = localStorage.getItem("hasAcceptedTandC")
+    if (hasAcceptedTandC) {
+      setShowLoginModal(false, true)
+      console.log("1111", hasAcceptedTandC)
+      return
+    }
     // if (isLoggedIn && !hasAcceptedTandC) {
 
     if (isLoggedIn) {
       setTimeout(() => {
-        setShowLoginModal(true)
+        setShowLoginModal(true, false)
+        localStorage.setItem("hasAcceptedTandC", "true")
       }, 500)
     }
   }, [isLoggedIn, setShowLoginModal])
@@ -103,6 +114,7 @@ export default function Header() {
   const handleLogout = () => {
     setIsLoggedIn(false)
     localStorage.setItem("isLoggedIn", "false")
+    localStorage.removeItem("hasAcceptedTandC")
     router.push("/")
   }
 
@@ -149,11 +161,12 @@ export default function Header() {
             </div>
           </div>
         </div>
-        <Button onClick={sendFeedback}>Send</Button>
+        {/* <Button onClick={sendFeedback}>Send</Button> */}
         {isMobileMenuOpen && <MobileMenu />}
         <LoginModal
           isOpen={showLoginModal}
-          onClose={() => setShowLoginModal(false)}
+          handleAccept={() => setShowLoginModal(false, true)}
+          onClose={() => setShowLoginModal(false, false)}
         />
       </div>
     </nav>

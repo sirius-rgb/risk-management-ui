@@ -2,9 +2,10 @@ import { StateCreator } from "zustand"
 
 export interface Auth {
   isLoggedIn: boolean
+  isAcceptTAndC: boolean
   showLoginModal: boolean
   showTAndCModal: boolean
-  setShowLoginModal: (status: boolean) => void
+  setShowLoginModal: (isOpen: boolean, isAccept: boolean) => void
   setTAndCModalOpen: (status: boolean) => void
   onAccountSelect?: (account: string) => void
   user: { username: string; avatar: string } | null
@@ -17,9 +18,11 @@ export interface Auth {
 
 export const createAuthSlice: StateCreator<Auth> = (set, get) => ({
   isLoggedIn: false,
+  isAcceptTAndC: false,
   showLoginModal: false,
   showTAndCModal: false,
-  setShowLoginModal: (status) => set({ showLoginModal: status }),
+  setShowLoginModal: (isOpen, isAccept) =>
+    set({ showLoginModal: isOpen, isAcceptTAndC: isAccept }),
   setTAndCModalOpen: (status) => set({ showLoginModal: status }),
   user: {
     username: "Unknown",

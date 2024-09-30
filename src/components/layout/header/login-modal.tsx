@@ -1,5 +1,3 @@
-import { User } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -12,11 +10,15 @@ import {
 
 interface LoginModalProps {
   isOpen: boolean
+  handleAccept: () => void
   onClose: () => void
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
-  const fakeEmails = ["demo.test@example.com"]
+const LoginModal: React.FC<LoginModalProps> = ({
+  isOpen,
+  handleAccept,
+  onClose,
+}) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
@@ -42,7 +44,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex flex-row justify-around sm:justify-evenly">
-          <Button onClick={onClose}>Accept</Button>
+          <Button onClick={handleAccept}>Accept</Button>
           <Button onClick={onClose} variant="outline">
             Decline
           </Button>
