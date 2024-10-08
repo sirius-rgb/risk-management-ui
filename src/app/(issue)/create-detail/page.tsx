@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useStore } from "@/store"
 import { toast } from "sonner"
 import useSWRMutation from "swr/mutation"
@@ -68,11 +68,18 @@ export default function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { trigger, isMutating } = useSWRMutation("/api/issue", issueFetcher)
   const router = useRouter()
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     initializeIssue()
   }, [initializeIssue])
+
+  // bug: will infintely stay on create-issue pages
+  // useEffect(() => {
+  //   if (performance.navigation.type === 1) {
+  //     router.push("create-issue")
+  //   }
+  // }, [router])
 
   if (error) return <div>Error!</div>
 
@@ -124,6 +131,7 @@ export default function Page() {
         placeholder="please provide details of control or risk gaps below"
       />
       {isMutating ? <LoadingTextArea /> : <Area />}
+      {/* {isMutating ? <StartRating /> : "Loading..."} */}
 
       <StartRating />
       <TermsAndConditions />

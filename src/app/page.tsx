@@ -7,7 +7,9 @@ import { toast } from "sonner"
 import { hero_description, hero_title } from "@/lib/conts"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
-import Header from "@/components/layout/header"
+import { Container } from "@/components/layout/container"
+// import Header from "@/components/layout/header"
+import Header from "@/components/layout/header/header"
 
 const heros = [
   {
@@ -77,12 +79,13 @@ const tasks = [
 
 export default function Page() {
   return (
-    <>
+    <Container>
       <Header />
+      {/* <Header /> */}
       <Hero />
       <Tabs />
       {/* <Tasks /> */}
-    </>
+    </Container>
   )
 }
 

@@ -20,8 +20,8 @@ export interface Issue {
 }
 
 export interface Feedback {
-  feedback_id?: string
-  score: string
+  request_id?: string
+  score: number
   feedback: string
 }
 
