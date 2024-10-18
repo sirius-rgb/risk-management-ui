@@ -10,6 +10,7 @@ export interface Feedback {
   setFeedbackDialogOpen: (isOpen: boolean) => void
   setFeedback: (feedback: string) => void
   setRating: (rating: number) => void
+  setRated: (rated: boolean) => void
   setHoverRating: (rating: number) => void
   sendRating: (
     rating: number,
@@ -39,6 +40,9 @@ export const createFeedbackSlice: StateCreator<Feedback> = (set) => ({
   },
   setRating(rating) {
     set({ rating, rated: true })
+  },
+  setRated(rated) {
+    set({ rated })
   },
   setHoverRating(hoverRating) {
     set({ hoverRating })

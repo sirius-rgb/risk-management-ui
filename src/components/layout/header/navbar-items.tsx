@@ -110,7 +110,7 @@ const NavBarItems: React.FC<NavBarItemsProps> = ({ handleLogout }) => {
             <Link href="/docs" legacyBehavior passHref>
               <NavigationMenuLink
                 className={navigationMenuTriggerStyle()}
-                onClick={() => router.push("/create-issue")}
+                onClick={() => router.push("/issue")}
               >
                 Create Issue
               </NavigationMenuLink>

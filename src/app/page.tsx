@@ -14,7 +14,7 @@ import Header from "@/components/layout/header/header"
 const heros = [
   {
     title: "Issue Creation",
-    href: "/create-issue",
+    href: "/issue",
     content: `Assist in issue creation to the framework requirements`,
     name: "create",
   },

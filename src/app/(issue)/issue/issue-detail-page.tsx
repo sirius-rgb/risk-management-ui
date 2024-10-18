@@ -33,10 +33,9 @@ import { Label } from "@/components/ui/label"
 import { SecureTextarea } from "@/components/ui/secureTextarea"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
-import Rating from "@/components/rate"
 
-import { FeedbackDialog } from "./feedback"
-import StartRating from "./startRate"
+import FeedbackDialog from "./feedbackDialog"
+import StartRating from "./StartRate"
 
 const SkeletonTextarea = () => (
   <div className="mb-4 space-y-4">
@@ -45,7 +44,7 @@ const SkeletonTextarea = () => (
   </div>
 )
 
-export default function Page() {
+export function IssueDetailPage() {
   const {
     proposedIssueTitle,
     proposedIssueDescription,
@@ -62,24 +61,23 @@ export default function Page() {
     setResponseData,
     setIssueId,
     setRating,
+    setRated,
     setAcceptTAndC,
     initializeIssue,
   } = useStore()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { trigger, isMutating } = useSWRMutation("/api/issue", issueFetcher)
-  const router = useRouter()
-  const pathname = usePathname()
 
   useEffect(() => {
     initializeIssue()
-  }, [initializeIssue])
+    setRating(0)
+    setRated(false)
 
-  // bug: will infintely stay on create-issue pages
-  // useEffect(() => {
-  //   if (performance.navigation.type === 1) {
-  //     router.push("create-issue")
-  //   }
-  // }, [router])
+    return () => {
+      setAcceptTAndC(false)
+      setRated(false)
+    }
+  }, [initializeIssue])
 
   if (error) return <div>Error!</div>
 
@@ -131,8 +129,6 @@ export default function Page() {
         placeholder="please provide details of control or risk gaps below"
       />
       {isMutating ? <LoadingTextArea /> : <Area />}
-      {/* {isMutating ? <StartRating /> : "Loading..."} */}
-
       <StartRating />
       <TermsAndConditions />
 
@@ -144,12 +140,8 @@ export default function Page() {
         >
           {isSubmitting ? "Reviewing..." : "Review Again"}
         </Button>
+        <FeedbackDialog isLoading={isMutating} />
       </div>
-
-      {/* <FeedbackDialog
-          isLoading={isMutating}
-          rating={useStore((state) => state.rating)}
-        /> */}
     </section>
   )
 }

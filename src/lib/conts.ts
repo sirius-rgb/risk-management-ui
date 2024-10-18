@@ -18,9 +18,9 @@ export const additionalInfo = `
 3. What is the proposed solution?
 `
 
-export const issue_title = `Proposed Issue Title`
+export const issue_title = `Draft Issue Title`
 
-export const issue_description = `Proposed Issue Description`
+export const issue_description = `Draft Issue Description`
 
 export const suggessted_issue_title = `Suggested Issue Title`
 
@@ -39,7 +39,7 @@ export const components: {
 }[] = [
   {
     title: "Create Issue",
-    href: "/create-issue",
+    href: "/issue",
     description:
       "A modal dialog that interrupts the user with important content and expects a response.",
   },

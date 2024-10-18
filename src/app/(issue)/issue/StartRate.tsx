@@ -23,14 +23,14 @@ const StartRating = () => {
   const handleRating = async (rate: number) => {
     try {
       setRating(rate)
-      const score = rate * 20
+      // const score = rate * 20
       // const responseData = useStore.getState().responseData;
-      const feedback_result = await feedbackTrigger({
-        request_id: "test-request_id",
-        score,
-        feedback: "",
-      })
-      toast("Scuess!")
+      // const feedback_result = await feedbackTrigger({
+      //   request_id: "test-request_id",
+      //   score,
+      //   feedback: "",
+      // })
+      // toast("Scuess!")
     } catch (error) {
       toast.error("Error")
       setRating(0)

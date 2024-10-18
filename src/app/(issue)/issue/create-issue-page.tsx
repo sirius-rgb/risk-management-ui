@@ -1,22 +1,15 @@
 "use client"
 
 import { useEffect } from "react"
-import { useRouter } from "next/navigation"
 import { useStore } from "@/store"
 import { toast } from "sonner"
 
-import {
-  issue_description,
-  issue_description_placeholder,
-  issue_title,
-  issue_title_placeholder,
-} from "@/lib/conts"
+import { issue_description, issue_title } from "@/lib/conts"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
-export default function Page() {
-  const router = useRouter()
+export function CreateIssuePage() {
   const {
     proposedIssueTitle,
     proposedIssueDescription,
@@ -29,7 +22,6 @@ export default function Page() {
     setIssueId,
   } = useStore()
 
-  // 在组件加载时重置 title 和 description
   useEffect(() => {
     setProposedIssueTitle("")
     setProposedIssueDescription("")
@@ -69,11 +61,10 @@ export default function Page() {
       if (!response.ok) {
         throw new Error("Failed to create issue")
       }
-
       const data = await response.json()
+
       setResponseData(data)
       setIssueId(data.data.issue_id)
-      router.push("/create-detail")
     } catch (error) {
       console.error("create issue error:", error)
       setError("There was an error when creating the issue. Please try again.")
@@ -95,7 +86,6 @@ export default function Page() {
         id="title"
         rows={1}
         className="my-4 min-h-8"
-        placeholder={issue_title_placeholder}
         onChange={(e) => setProposedIssueTitle(e.target.value)}
       />
 
@@ -103,7 +93,6 @@ export default function Page() {
       <Textarea
         id="description"
         className="mb-4 mt-2 min-h-64"
-        placeholder={issue_description_placeholder}
         onChange={(e) => setProposedIssueDescription(e.target.value)}
       />
       <Button

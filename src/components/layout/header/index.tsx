@@ -69,10 +69,6 @@ export default function Header() {
   const isAcceptTAndC = useStore((state) => state.isAcceptTAndC)
   const initializeAuth = useStore((state) => state.initializeAuth)
 
-  const sendFeedback = debounce(() => {
-    console.log("Sending feedback")
-  }, 500)
-
   useEffect(() => {
     initializeAuth()
   }, [initializeAuth])
@@ -98,6 +94,7 @@ export default function Header() {
   }
 
   const handleLogout = () => {
+    console.log("logout")
     setIsLoggedIn(false)
     localStorage.setItem("isLoggedIn", "false")
     localStorage.removeItem("hasAcceptedTandC")
@@ -147,12 +144,11 @@ export default function Header() {
             </div>
           </div>
         </div>
-        {/* <Button onClick={sendFeedback}>Send</Button> */}
         {isMobileMenuOpen && <MobileMenu />}
         <LoginModal
           isOpen={showLoginModal}
           handleAccept={() => setShowLoginModal(false, true)}
-          onClose={() => setShowLoginModal(false, false)}
+          onClose={handleLogout}
         />
       </div>
     </nav>

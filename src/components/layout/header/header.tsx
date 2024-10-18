@@ -109,7 +109,6 @@ export default function Header() {
   }
   return (
     <header>
-      {/* <nav className="mx-auto max-w-6xl px-8"> */}
       <nav className="sticky top-0 z-10 border-b border-gray-200 bg-white bg-opacity-30 backdrop-blur-lg backdrop-filter dark:border-none dark:bg-transparent">
         <Container className="relative z-50 flex justify-between ">
           <div className="max-w-8xl container mx-auto">
@@ -120,12 +119,11 @@ export default function Header() {
                 onClick={() => router.push("/")}
               >
                 <img
-                  // src="/logo.svg"
                   src="/logo.png"
                   alt="logo"
-                  className="mr-2 h-6 w-auto sm:h-7 md:h-8"
+                  className="mr-2 h-12 w-auto sm:h-6 md:h-8"
                 />
-                <a className="hidden text-lg font-semibold text-gray-900 dark:text-white sm:text-xl md:ml-2 md:block md:text-2xl">
+                <a className="hidden text-xl font-semibold text-gray-900 dark:text-white sm:text-xl md:ml-2 md:block md:text-xl">
                   Risk Management Co-pilot
                 </a>
               </div>
@@ -150,7 +148,6 @@ export default function Header() {
                 </div>
               </div>
             </div>
-            {/* <Button onClick={sendFeedback}>Send</Button> */}
             {isMobileMenuOpen && <MobileMenu />}
             <LoginModal
               isOpen={showLoginModal}
@@ -194,16 +191,13 @@ const NavBarItems: React.FC<NavBarItemsProps> = ({ handleLogout }) => {
                     </a>
                   </NavigationMenuLink>
                 </li>
-                <ListItem href="/docs" title="Introduction">
+                <ListItem href="/" title="Introduction">
                   Introduction to the Co-pilot
                 </ListItem>
-                <ListItem href="/docs/installation" title="Usage">
+                <ListItem href="/terms-and-conditions" title="Usage">
                   Guide to use the Co-pilot
                 </ListItem>
-                <ListItem
-                  href="/docs/primitives/typography"
-                  title="User Conditions"
-                >
+                <ListItem href="/terms-and-conditions" title="User Conditions">
                   User conditions and terms
                 </ListItem>
               </ul>
@@ -229,7 +223,7 @@ const NavBarItems: React.FC<NavBarItemsProps> = ({ handleLogout }) => {
             <Link href="/docs" legacyBehavior passHref>
               <NavigationMenuLink
                 className={navigationMenuTriggerStyle()}
-                onClick={() => router.push("/create-issue")}
+                onClick={() => router.push("/issue")}
               >
                 Create Issue
               </NavigationMenuLink>
