@@ -8,8 +8,7 @@ import { hero_description, hero_title } from "@/lib/conts"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
 import { Container } from "@/components/layout/container"
-// import Header from "@/components/layout/header"
-import Header from "@/components/layout/header/header"
+import Header from "@/components/layout/header"
 
 const heros = [
   {
