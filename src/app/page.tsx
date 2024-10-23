@@ -6,6 +6,7 @@ import { toast } from "sonner"
 
 import { hero_description, hero_title } from "@/lib/conts"
 import { Button } from "@/components/ui/button"
+import LogoScroll from "@/components/ui/logo-move"
 import { Icons } from "@/components/icons"
 import { Container } from "@/components/layout/container"
 import Header from "@/components/layout/header"
@@ -83,6 +84,8 @@ export default function Page() {
       {/* <Header /> */}
       <Hero />
       <Tabs />
+      <LogoScroll />
+
       {/* <Tasks /> */}
     </Container>
   )
@@ -133,6 +136,7 @@ const Hero = () => {
 
 const Tabs = () => {
   const isLoggedIn = useStore((state) => state.isLoggedIn)
+  const token = useStore((state) => state.token)
   const router = useRouter()
   return (
     <section className="m-auto mt-4 p-4 sm:px-16">

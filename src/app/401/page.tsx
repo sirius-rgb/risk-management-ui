@@ -11,33 +11,39 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-export default function NotAuthorized() {
+export default function UnauthorizedPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
-            <AlertCircle className="h-10 w-10 text-red-600 dark:text-red-300" />
-          </div>
-          <CardTitle className="text-center text-2xl font-bold text-gray-800 dark:text-gray-200">
-            401 - Unauthorized
-          </CardTitle>
-          <CardDescription className="text-center text-gray-600 dark:text-gray-400">
-            Oops! You don't have permission to access this page.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="text-center">
-          <p className="text-gray-700 dark:text-gray-300">
-            It seems you're trying to access a restricted area. Please contact
-            the site administrator for access.
-          </p>
-        </CardContent>
-        <CardFooter className="flex justify-center">
-          <Button asChild>
-            <Link href="/">Go to Apply Access</Link>
-          </Button>
-        </CardFooter>
-      </Card>
+    <div className="flex min-h-screen flex-col bg-gray-100">
+      <header className="bg-white shadow">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold text-gray-900">401 Unauthorized</h1>
+        </div>
+      </header>
+      <main className="flex flex-grow items-center justify-center px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+              <AlertCircle className="h-8 w-8 text-red-600" />
+            </div>
+            <CardTitle className="text-center">Access Denied</CardTitle>
+            <CardDescription className="text-center">
+              You do not have permission to view this page.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center text-sm text-muted-foreground">
+              This error occurs when you try to access a resource without proper
+              authentication or authorization. Please ensure you are logged in
+              and have the necessary permissions.
+            </p>
+          </CardContent>
+          <CardFooter className="flex justify-center">
+            <Button asChild>
+              <Link href="/login">Return to Login</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+      </main>
     </div>
   )
 }

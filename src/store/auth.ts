@@ -5,14 +5,31 @@ export interface Auth {
   isAcceptTAndC: boolean
   showLoginModal: boolean
   showTAndCModal: boolean
+  token: string
+  setToken: (token: string) => void
   setShowLoginModal: (isOpen: boolean, isAccept: boolean) => void
   setTAndCModalOpen: (status: boolean) => void
   onAccountSelect?: (account: string) => void
-  user: { username: string; avatar: string } | null
+  user: {
+    name: string
+    mail: string
+    title: string
+    department: string
+    country: string
+    avatar: string
+  }
   setLoggedIn: (
     status: boolean,
     user?: { username: string; avatar: string }
   ) => void
+  setUser: (user: {
+    name: string
+    mail: string
+    title: string
+    department: string
+    country: string
+    avatar: string
+  }) => void
   initializeAuth: () => void
 }
 
@@ -21,15 +38,26 @@ export const createAuthSlice: StateCreator<Auth> = (set, get) => ({
   isAcceptTAndC: false,
   showLoginModal: false,
   showTAndCModal: false,
+  token: "",
+  setToken: (token) => set({ token }),
   setShowLoginModal: (isOpen, isAccept) =>
     set({ showLoginModal: isOpen, isAcceptTAndC: isAccept }),
   setTAndCModalOpen: (status) => set({ showLoginModal: status }),
   user: {
-    username: "Unknown",
-    avatar: "/avatar.png",
+    name: "",
+    mail: "",
+    title: "",
+    department: "",
+    country: "",
+    avatar: "",
   },
-  setLoggedIn: (status, user) => {
-    set({ isLoggedIn: status, user: user || null })
+  // setUser: (user) => set({ user }),
+  setUser: (userData) => {
+    set({ user: userData })
+    localStorage.setItem("user", JSON.stringify(userData)) // 存储到 localStorage
+  },
+  setLoggedIn: (status) => {
+    set({ isLoggedIn: status })
     if (typeof window !== "undefined") {
       localStorage.setItem("isLoggedIn", status.toString())
     }
