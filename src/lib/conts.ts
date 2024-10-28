@@ -1,4 +1,4 @@
-export const hero_title = `Risk Management Co-pilot`
+export const hero_title = `Fun Management Copilot`
 
 export const hero_description = `A generative AI assistant that helps you draft risk and control narratives. Select the task that you need help with.`
 

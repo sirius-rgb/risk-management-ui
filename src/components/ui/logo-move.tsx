@@ -2,10 +2,10 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 
 const logos = [
-  "/svg/kong.svg",
+  "/svg/react.svg",
   "/svg/next.svg",
   "/svg/python.svg",
-  "/svg/react.svg",
+  "/svg/kong.svg",
   "/svg/gcp.svg",
 ]
 
@@ -28,7 +28,7 @@ export default function LogoScroll() {
   return (
     <section
       // from-[#ff80b5] via-slate-500 to-[#9089fc]
-      className="relative overflow-hidden bg-[#0a0a0a]  bg-gradient-to-r   py-20"
+      className="relative overflow-hidden bg-[#ffffff] bg-gradient-to-r  py-20 dark:bg-[#0a0a0a]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -40,22 +40,21 @@ export default function LogoScroll() {
         }}
       />
       <div className="container relative z-10">
-        <h2 className="mb-12 text-center text-4xl font-bold tracking-wide text-white">
-          Trusted by Industry Leaders
+        <h2 className="mb-12 text-center text-4xl font-bold tracking-wide text-gray-700 dark:text-white">
+          Power by platform
         </h2>
         <div className="relative w-full overflow-hidden">
           <div className="animate-scroll flex space-x-16">
             {[...logos, ...logos].map((logo, index) => (
               <div
                 key={index}
-                className="flex h-40 w-40 flex-shrink-0 transform items-center justify-center rounded-lg  bg-opacity-10 transition-all duration-300 hover:scale-110 hover:bg-opacity-20"
+                className="flex h-40 w-40 flex-shrink-0 transform items-center justify-center rounded-lg bg-opacity-10 transition-all duration-300 hover:scale-110 hover:bg-opacity-20"
               >
                 <Image
                   src={logo}
                   alt={`Logo ${(index % logos.length) + 1}`}
                   width={120}
                   height={60}
-                  className="opacity-70 brightness-0 invert filter transition-opacity duration-300 hover:opacity-100"
                 />
               </div>
             ))}

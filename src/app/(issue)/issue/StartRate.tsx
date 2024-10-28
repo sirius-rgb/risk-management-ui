@@ -6,6 +6,7 @@ import { feedbackFetcher } from "@/lib/api"
 
 const StartRating = () => {
   const rating = useStore((state) => state.rating)
+  const isReviewing = useStore((state) => state.isReviewing)
   const hoverRating = useStore((state) => state.hoverRating)
   const setRating = useStore((state) => state.setRating)
   const setHoverRating = useStore((state) => state.setHoverRating)
@@ -48,7 +49,7 @@ const StartRating = () => {
           onMouseLeave={() => setHoverRating(0)}
           onClick={() => handleRating(index + 1)}
           className={`focus:outline-none ${isFeedbackMutating ? "cursor-not-allowed opacity-50" : ""}`}
-          disabled={isFeedbackMutating}
+          disabled={isFeedbackMutating || isReviewing}
         >
           {isFeedbackMutating ? (
             <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-yellow-300"></div>

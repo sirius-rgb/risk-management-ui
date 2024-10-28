@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { useEffect, useState } from "react"
-import { usePathname, useRouter } from "next/navigation"
 import { useStore } from "@/store"
 import { toast } from "sonner"
 import useSWRMutation from "swr/mutation"
@@ -39,8 +38,8 @@ import StartRating from "./StartRate"
 
 const SkeletonTextarea = () => (
   <div className="mb-4 space-y-4">
-    <Skeleton className="h-4 w-[100px]" />
-    <Skeleton className="h-20 w-full" />
+    <Skeleton className="h-4 w-[100px] animate-pulse bg-gray-300 dark:bg-gray-600" />
+    <Skeleton className="h-20 w-full animate-pulse bg-gray-300 dark:bg-gray-600" />
   </div>
 )
 
@@ -50,14 +49,11 @@ export function IssueDetailPage() {
     proposedIssueDescription,
     issueId,
     rated,
-    isIssueLoading,
     isAcceptTAndC,
-    error,
-    responseData,
+    isReviewing,
+    setIsReviewing,
     setProposedIssueTitle,
     setProposedIssueDescription,
-    setIsIssueLoading,
-    setError,
     setResponseData,
     setIssueId,
     setRating,
@@ -65,43 +61,46 @@ export function IssueDetailPage() {
     setAcceptTAndC,
     initializeIssue,
   } = useStore()
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const { trigger, isMutating } = useSWRMutation("/api/issue", issueFetcher)
 
   useEffect(() => {
     initializeIssue()
+  }, [initializeIssue])
+
+  useEffect(() => {
+    setAcceptTAndC(false)
+    setRating(0)
+    setRated(false)
+    return () => {
+      setAcceptTAndC(false)
+      setRating(0)
+      setRated(false)
+    }
+  }, [])
+
+  async function handleReview(): Promise<void> {
+    setIsReviewing(true)
+    setAcceptTAndC(false)
     setRating(0)
     setRated(false)
 
-    return () => {
-      setAcceptTAndC(false)
-      setRated(false)
-    }
-  }, [initializeIssue])
-
-  if (error) return <div>Error!</div>
-
-  async function handleReview(): Promise<void> {
-    setIsSubmitting(true)
-    setAcceptTAndC(false)
-    setRating(0)
     try {
       const result = await trigger({
         issue_id: issueId || undefined,
         issue_title: proposedIssueTitle,
         issue_description: proposedIssueDescription,
       })
-      setIsIssueLoading(true)
+      // setIsIssueLoading(true)
       if (result && result.data) {
         setResponseData(result)
         setIssueId(result.data.issue_id)
       }
     } catch (error) {
       console.error("review issue error:", error)
-      setError("There was an error when reviewing the issue. Please try again.")
+      toast("Failed to review issue")
     } finally {
-      setIsSubmitting(false)
-      setIsIssueLoading(false)
+      setIsReviewing(false)
+      console.log("rated", rated)
     }
   }
 
@@ -135,10 +134,10 @@ export function IssueDetailPage() {
       <div className="mt-4 flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
         <Button
           className="h-8 w-full"
-          disabled={!(isAcceptTAndC && rated) || isSubmitting}
+          disabled={!(isAcceptTAndC && rated) || isReviewing}
           onClick={handleReview}
         >
-          {isSubmitting ? "Reviewing..." : "Review Again"}
+          {isReviewing ? "Reviewing..." : "Review Again"}
         </Button>
         <FeedbackDialog isLoading={isMutating} />
       </div>
@@ -158,6 +157,7 @@ const LoadingTextArea = () => {
 
 const Area = () => {
   const isAcceptTAndC = useStore((state) => state.isAcceptTAndC)
+  const rated = useStore((state) => state.rated)
   const responseData = useStore((state) => state.responseData)
   return (
     <>
@@ -165,7 +165,7 @@ const Area = () => {
       <Textarea
         id="revisedTitle"
         rows={1}
-        disabled={!isAcceptTAndC}
+        disabled={!(isAcceptTAndC && rated)}
         className="mb-4 mt-2 min-h-8 select-none"
         defaultValue={responseData?.data?.revised_issue_title || ""}
         placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
@@ -175,7 +175,7 @@ const Area = () => {
       <Textarea
         id="revisedDescription"
         rows={1}
-        disabled={!isAcceptTAndC}
+        disabled={!(isAcceptTAndC && rated)}
         className="mb-4 mt-2 min-h-36 select-none"
         defaultValue={responseData?.data?.revised_issue_description || ""}
         placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
@@ -185,7 +185,7 @@ const Area = () => {
       <SecureTextarea
         id="title"
         rows={1}
-        disabled={!isAcceptTAndC}
+        disabled={!(isAcceptTAndC && rated)}
         defaultValue={responseData?.data?.additional_information_needed || ""}
         className="mb-4 mt-2 min-h-32"
         placeholder={`The LLM will generate the additional information needed for the issue creation`}
@@ -197,11 +197,12 @@ const Area = () => {
 const TermsAndConditions = () => {
   const setAcceptTAndC = useStore((state) => state.setAcceptTAndC)
   const isAcceptTAndC = useStore((state) => state.isAcceptTAndC)
+  const isReviewing = useStore((state) => state.isReviewing)
   return (
     <AlertDialog>
       <div className="my-2 flex flex-col items-center justify-center space-y-2 sm:flex-row sm:justify-start sm:space-x-2 sm:space-y-0">
         <AlertDialogTrigger asChild>
-          <Checkbox id="terms" checked={isAcceptTAndC} />
+          <Checkbox id="terms" checked={isAcceptTAndC} disabled={isReviewing} />
         </AlertDialogTrigger>
         <label
           htmlFor="terms"

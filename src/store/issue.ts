@@ -5,13 +5,13 @@ export interface Issue {
   proposedIssueDescription: string
   issueId: string | null
   isIssueLoading: boolean
-  error: string | null
+  isReviewing: boolean
+  setIsReviewing: (isReviewing: boolean) => void
   responseData: any | null
   setProposedIssueTitle: (title: string) => void
   setProposedIssueDescription: (description: string) => void
   setIssueId: (id: string | null) => void
   setIsIssueLoading: (isIssueLoading: boolean) => void
-  setError: (error: string | null) => void
   setResponseData: (data: any | null) => void
   initializeIssue: () => void
 }
@@ -21,7 +21,10 @@ export const createIssueSlice: StateCreator<Issue> = (set) => ({
   proposedIssueDescription: "",
   issueId: null,
   isIssueLoading: false,
-  error: null,
+  isReviewing: false,
+  setIsReviewing: ( isReviewing) => {
+    set({ isReviewing })
+  },
   responseData: null,
   setProposedIssueTitle: (title) => {
     localStorage.setItem("proposedIssueTitle", title)
@@ -33,7 +36,6 @@ export const createIssueSlice: StateCreator<Issue> = (set) => ({
   },
   setIssueId: (id) => set({ issueId: id }),
   setIsIssueLoading: (isIssueLoading) => set({ isIssueLoading }),
-  setError: (error) => set({ error }),
   setResponseData: (data) => set({ responseData: data }),
   initializeIssue: () => {
     if (typeof window !== "undefined") {
@@ -44,14 +46,4 @@ export const createIssueSlice: StateCreator<Issue> = (set) => ({
       })
     }
   },
-  // initializeIssue: () => {
-  //   set({
-  //     proposedIssueTitle: "",
-  //     proposedIssueDescription: "",
-  //     issueId: null,
-  //     isIssueLoading: false,
-  //     error: null,
-  //     responseData: null,
-  //   })
-  // },
 })

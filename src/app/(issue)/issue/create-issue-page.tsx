@@ -17,7 +17,6 @@ export function CreateIssuePage() {
     setProposedIssueTitle,
     setProposedIssueDescription,
     setIsIssueLoading,
-    setError,
     setResponseData,
     setIssueId,
   } = useStore()
@@ -45,7 +44,6 @@ export function CreateIssuePage() {
       return
     }
     setIsIssueLoading(true)
-    setError(null)
     try {
       const response = await fetch("/api/issue", {
         method: "POST",
@@ -67,7 +65,6 @@ export function CreateIssuePage() {
       setIssueId(data.data.issue_id)
     } catch (error) {
       console.error("create issue error:", error)
-      setError("There was an error when creating the issue. Please try again.")
       toast.error(
         "There was an error when creating the issue. Please try again."
       )

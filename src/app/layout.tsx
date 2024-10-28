@@ -6,6 +6,7 @@ import { Inter } from "next/font/google"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/sonner"
+import Footer from "@/components/layout/footer"
 import { ThemeProvider } from "@/components/theme-provider"
 
 import { ConsoleWarningSuppress } from "./ConsoleWarningSuppress"
@@ -84,6 +85,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
           >
             <ConsoleWarningSuppress />
             {children}
+            <Footer />
             <Toaster />
           </ThemeProvider>
         </body>

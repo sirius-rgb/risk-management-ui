@@ -116,12 +116,12 @@ export default function Header() {
                 onClick={() => router.push("/")}
               >
                 <img
-                  src="/logo.png"
+                  src="/logo.svg"
                   alt="logo"
                   className="mr-2 h-12 w-auto sm:h-6 md:h-8"
                 />
                 <a className="hidden text-xl font-semibold text-gray-900 dark:text-white sm:text-xl md:ml-2 md:block md:text-xl">
-                  Risk Management Co-pilot
+                  Fun Management CoPilot
                 </a>
               </div>
               <div className="flex items-center space-x-4 ">

@@ -38,7 +38,7 @@ export default function UserHoverCard(props: UserProfile) {
         <Avatar className="h-10 w-10 cursor-pointer">
           <AvatarImage src={avatarUrl} alt="User avatar" />
           <AvatarFallback>
-            <AvatarImage src="/logo.png" alt="User avatar" />
+            <AvatarImage src="/logo.svg" alt="User avatar" />
           </AvatarFallback>
         </Avatar>
       </HoverCardTrigger>

@@ -25,23 +25,23 @@ export default function UnauthorizedPage() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
               <AlertCircle className="h-8 w-8 text-red-600" />
             </div>
-            <CardTitle className="text-center">Access Denied</CardTitle>
+            <CardTitle className="text-center">401 - Unauthorized</CardTitle>
             <CardDescription className="text-center">
-              You do not have permission to view this page.
+              Oops! It seems you're trying to access a restricted area.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-center text-sm text-muted-foreground">
-              This error occurs when you try to access a resource without proper
-              authentication or authorization. Please ensure you are logged in
-              and have the necessary permissions.
+              If you believe you should have access to this page, please contact
+              our support team at:
+              <a
+                className="block whitespace-pre-wrap break-words px-2 text-red-500"
+                href="mailto:example@email.com"
+              >
+                example@email.com
+              </a>
             </p>
           </CardContent>
-          <CardFooter className="flex justify-center">
-            <Button asChild>
-              <Link href="/login">Return to Login</Link>
-            </Button>
-          </CardFooter>
         </Card>
       </main>
     </div>

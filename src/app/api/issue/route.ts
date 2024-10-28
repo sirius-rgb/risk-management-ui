@@ -9,8 +9,7 @@ const nanoidStr = customAlphabet("abcdefghjklimnuvwxyz", 10)
 
 export async function GET() {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
+    // await new Promise((resolve) => setTimeout(resolve, 500))
     const mockIssue = {
       issue_id: `R-${nanoid(9)}`,
       request_id: nanoid(),
@@ -42,7 +41,7 @@ Context - ${nanoidStr()}`,
 }
 
 export async function POST(request: Request) {
-  // await new Promise((resolve) => setTimeout(resolve, 500))
+  await new Promise((resolve) => setTimeout(resolve, 3500))
 
   const { issue_title, issue_description } = await request.json()
   console.log(issue_title, issue_description)
