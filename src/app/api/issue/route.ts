@@ -7,49 +7,9 @@ const prisma = new PrismaClient()
 const nanoid = customAlphabet("0123456789", 9)
 const nanoidStr = customAlphabet("abcdefghjklimnuvwxyz", 10)
 
-export async function GET() {
-  try {
-    throw new Error("This is a test error")
-    const mockIssue = {
-      issue_id: `R-${nanoid(9)}`,
-      request_id: nanoid(),
-      revised_issue_title: "TM Operations: Quality of Case Analysis",
-      revised_issue_description: `Condition - ${nanoidStr()} 
-                                  Criteria - ${nanoidStr()}
-                                  Cause - ${nanoidStr()}
-                                  Consequence - ${nanoidStr()}
-                                  Context - ${nanoidStr()}`,
-      additional_information_needed: `
-                                  1. ${nanoidStr()}?
-                                  2. ${nanoidStr()}?
-                                  3. ${nanoidStr()}?
-                                  `,
-    }
-    return NextResponse.json({
-      status: "Success",
-      message: "Issue created successfully",
-      code: null,
-      data: mockIssue,
-    })
-  } catch (error) {
-    console.error(error)
-    return NextResponse.json({
-      status: "fail",
-      message:
-        "The LLM service is currently unavailable. Please try again 22 seconds later.",
-      data: null,
-      code: 429,
-    })
-  } finally {
-    await prisma.$disconnect()
-  }
-}
-
 export async function POST(request: Request) {
   try {
     await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    throw new Error()
 
     const { issue_title, issue_description } = await request.json()
     console.log(issue_title, issue_description)

@@ -7,16 +7,16 @@ export async function POST(request: Request) {
   try {
     const { request_id, response_score, feedback } = await request.json()
 
-    const newFeedback = await prisma.feedback.create({
-      data: {
-        request_id,
-        response_score,
-        feedback,
-      },
-    })
+    // const newFeedback = await prisma.feedback.create({
+    //   data: {
+    //     request_id,
+    //     response_score,
+    //     feedback,
+    //   },
+    // })
 
     return NextResponse.json(
-      { status: "Success", data: newFeedback },
+      // { status: "Success", data: newFeedback },
       { status: 201 }
     )
   } catch (error) {
