@@ -1,7 +1,6 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import MultiColumnScroll from "@/pages/column-scroll"
 import FeatureSection from "@/pages/feature"
 import HeroSection from "@/pages/hero"
 import { useStore } from "@/store"
@@ -88,7 +87,6 @@ export default function Page() {
       {/* <Hero /> */}
       <HeroSection />
       <FeatureSection />
-      <MultiColumnScroll />
       {/* <Tabs /> */}
       <LogoScroll />
 

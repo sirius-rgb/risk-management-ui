@@ -57,16 +57,20 @@ export function CreateIssuePage() {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to create issue")
-      }
-      const data = await response.json()
+        const errorResponse = await response.json()
+        console.log("errorData", errorResponse)
 
+        throw new Error(errorResponse.message)
+      }
+
+      const data = await response.json()
       setResponseData(data)
       setIssueId(data.data.issue_id)
-    } catch (error) {
+    } catch (error: any) {
       console.error("create issue error:", error)
       toast.error(
-        "There was an error when creating the issue. Please try again."
+        error.message ||
+          "There was an error when creating the issue. Please try again."
       )
     } finally {
       setIsIssueLoading(false)

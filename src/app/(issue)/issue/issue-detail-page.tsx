@@ -67,17 +67,6 @@ export function IssueDetailPage() {
     initializeIssue()
   }, [initializeIssue])
 
-  useEffect(() => {
-    setAcceptTAndC(false)
-    setRating(0)
-    setRated(false)
-    return () => {
-      setAcceptTAndC(false)
-      setRating(0)
-      setRated(false)
-    }
-  }, [])
-
   async function handleReview(): Promise<void> {
     setIsReviewing(true)
     setAcceptTAndC(false)
@@ -90,7 +79,6 @@ export function IssueDetailPage() {
         issue_title: proposedIssueTitle,
         issue_description: proposedIssueDescription,
       })
-      // setIsIssueLoading(true)
       if (result && result.data) {
         setResponseData(result)
         setIssueId(result.data.issue_id)

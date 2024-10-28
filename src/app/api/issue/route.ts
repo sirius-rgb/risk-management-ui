@@ -9,56 +9,81 @@ const nanoidStr = customAlphabet("abcdefghjklimnuvwxyz", 10)
 
 export async function GET() {
   try {
-    // await new Promise((resolve) => setTimeout(resolve, 500))
+    throw new Error("This is a test error")
     const mockIssue = {
       issue_id: `R-${nanoid(9)}`,
       request_id: nanoid(),
       revised_issue_title: "TM Operations: Quality of Case Analysis",
       revised_issue_description: `Condition - ${nanoidStr()} 
-Criteria - ${nanoidStr()}
-Cause - ${nanoidStr()}
-Consequence - ${nanoidStr()}
-Context - ${nanoidStr()}`,
+                                  Criteria - ${nanoidStr()}
+                                  Cause - ${nanoidStr()}
+                                  Consequence - ${nanoidStr()}
+                                  Context - ${nanoidStr()}`,
       additional_information_needed: `
-1. ${nanoidStr()}?
-2. ${nanoidStr()}?
-3. ${nanoidStr()}?
-`,
+                                  1. ${nanoidStr()}?
+                                  2. ${nanoidStr()}?
+                                  3. ${nanoidStr()}?
+                                  `,
     }
     return NextResponse.json({
       status: "Success",
+      message: "Issue created successfully",
+      code: null,
       data: mockIssue,
     })
   } catch (error) {
     console.error(error)
-    return NextResponse.json(
-      { status: "Error", error: "v1/issue failed" },
-      { status: 500 }
-    )
+    return NextResponse.json({
+      status: "fail",
+      message:
+        "The LLM service is currently unavailable. Please try again 22 seconds later.",
+      data: null,
+      code: 429,
+    })
   } finally {
     await prisma.$disconnect()
   }
 }
 
 export async function POST(request: Request) {
-  await new Promise((resolve) => setTimeout(resolve, 3500))
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 1500))
 
-  const { issue_title, issue_description } = await request.json()
-  console.log(issue_title, issue_description)
+    throw new Error()
 
-  const issue_id = `R-${nanoid()}`
-  const request_id = nanoid()
+    const { issue_title, issue_description } = await request.json()
+    console.log(issue_title, issue_description)
 
-  return NextResponse.json({
-    status: "Success",
-    data: {
-      issue_id: issue_id ?? nanoid(6),
-      request_id,
-      revised_issue_title: `TM Operations: Quality of Case Analysis - ${nanoid(6)}`,
-      revised_issue_description:
-        "Condition - Lorem ipsum\nCriteria - Dolor sit amet\nCause - Consectetur adipiscing\nConsequence - Elit sed do eiusmod\nContext - Tempor incididunt",
-      additional_information_needed:
-        "1. What is the specific impact on operations?\n2. How frequently does this issue occur?\n3. Are there any existing controls in place?",
-    },
-  })
+    const issue_id = `R-${nanoid()}`
+    const request_id = nanoid()
+
+    return NextResponse.json({
+      status: "Success",
+      message: "Issue created successfully",
+      code: null,
+      data: {
+        issue_id: issue_id ?? nanoid(6),
+        request_id,
+        revised_issue_title: `TM Operations: Quality of Case Analysis - ${nanoid(6)}`,
+        revised_issue_description:
+          "Condition - Lorem ipsum\nCriteria - Dolor sit amet\nCause - Consectetur adipiscing\nConsequence - Elit sed do eiusmod\nContext - Tempor incididunt",
+        additional_information_needed:
+          "1. What is the specific impact on operations?\n2. How frequently does this issue occur?\n3. Are there any existing controls in place?",
+      },
+    })
+  } catch (error) {
+    console.error(error)
+    return NextResponse.json(
+      {
+        status: "fail",
+        message:
+          "The LLM service is currently unavailable. Please try again 22 seconds later.",
+        data: null,
+        code: 429,
+      },
+      { status: 429 }
+    )
+  } finally {
+    await prisma.$disconnect()
+  }
 }

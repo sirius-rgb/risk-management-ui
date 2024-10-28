@@ -33,12 +33,12 @@ export default function UnauthorizedPage() {
           <CardContent>
             <p className="text-center text-sm text-muted-foreground">
               If you believe you should have access to this page, please contact
-              our support team at:
+              our engineer:
               <a
                 className="block whitespace-pre-wrap break-words px-2 text-red-500"
-                href="mailto:example@email.com"
+                href="mailto:keqing@qq.com,keqing@gmail.com?subject=Support Request&body=Please describe your issue here."
               >
-                example@email.com
+                Keqing
               </a>
             </p>
           </CardContent>
