@@ -86,7 +86,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             <ConsoleWarningSuppress />
             {children}
             <Footer />
-            <Toaster />
+            <Toaster closeButton richColors />
           </ThemeProvider>
         </body>
       </html>

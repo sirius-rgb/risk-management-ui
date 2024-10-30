@@ -67,6 +67,12 @@ export function IssueDetailPage() {
     initializeIssue()
   }, [initializeIssue])
 
+  useEffect(() => {
+    return () => {
+      toast.dismiss()
+    }
+  }, [])
+
   async function handleReview(): Promise<void> {
     setIsReviewing(true)
     setAcceptTAndC(false)
@@ -83,12 +89,14 @@ export function IssueDetailPage() {
         setResponseData(result)
         setIssueId(result.data.issue_id)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("review issue error:", error)
-      toast("Failed to review issue")
+      toast.error(`${error.message}`, {
+        duration: Infinity,
+        dismissible: true,
+      })
     } finally {
       setIsReviewing(false)
-      console.log("rated", rated)
     }
   }
 

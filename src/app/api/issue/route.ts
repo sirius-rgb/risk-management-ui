@@ -16,6 +16,7 @@ export async function POST(request: Request) {
 
     const issue_id = `R-${nanoid()}`
     const request_id = nanoid()
+    throw new Error()
 
     return NextResponse.json({
       status: "Success",
