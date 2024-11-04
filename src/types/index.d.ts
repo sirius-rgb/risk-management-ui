@@ -17,6 +17,7 @@ export interface Issue {
   issue_id?: string
   issue_title: string
   issue_description: string
+  signal?: AbortSignal
 }
 
 export interface Feedback {

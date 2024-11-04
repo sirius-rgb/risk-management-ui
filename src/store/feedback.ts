@@ -1,4 +1,3 @@
-import useSWR from "swr"
 import { StateCreator } from "zustand"
 
 export interface Feedback {
@@ -39,7 +38,7 @@ export const createFeedbackSlice: StateCreator<Feedback> = (set) => ({
     set({ feedback })
   },
   setRating(rating) {
-    set({ rating, rated: true })
+    set({ rating })
   },
   setRated(rated) {
     set({ rated })

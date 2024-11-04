@@ -9,14 +9,12 @@ const nanoidStr = customAlphabet("abcdefghjklimnuvwxyz", 10)
 
 export async function POST(request: Request) {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    throw new Error()
 
     const { issue_title, issue_description } = await request.json()
-    console.log(issue_title, issue_description)
-
     const issue_id = `R-${nanoid()}`
     const request_id = nanoid()
-    throw new Error()
 
     return NextResponse.json({
       status: "Success",
@@ -38,9 +36,11 @@ export async function POST(request: Request) {
       {
         status: "fail",
         message:
-          "The LLM service is currently unavailable. Please try again 22 seconds later.",
+          "The LLM service is currently unavailable. Please try again 5s later.",
         data: null,
-        code: 429,
+        // code: 403,
+        code: 4029,
+        // code: 5000,
       },
       { status: 429 }
     )
