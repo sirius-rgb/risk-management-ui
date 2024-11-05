@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 
 import {
   additional_information_needed,
@@ -16,6 +16,9 @@ interface LoadedAreaProps {
 
 const LoadedArea = (props: LoadedAreaProps) => {
   const { isAcceptTAndC, rated, responseData } = props
+
+  useEffect(() => {}, [responseData])
+
   return (
     <>
       <Label htmlFor="revisedTitle">{suggessted_issue_title}</Label>
@@ -24,8 +27,7 @@ const LoadedArea = (props: LoadedAreaProps) => {
         rows={1}
         disabled={!(isAcceptTAndC && rated)}
         className="mb-4 mt-2 min-h-8 select-none"
-        defaultValue={responseData?.data?.revised_issue_title || ""}
-        placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
+        value={responseData?.data?.revised_issue_title || ""}
       />
 
       <Label htmlFor="revisedDescription">{suggessted_issue_description}</Label>
@@ -34,8 +36,7 @@ const LoadedArea = (props: LoadedAreaProps) => {
         rows={1}
         disabled={!(isAcceptTAndC && rated)}
         className="mb-4 mt-2 min-h-36 select-none"
-        defaultValue={responseData?.data?.revised_issue_description || ""}
-        placeholder="Lorem ipsum, dolor sit amet consectetur adipisicing elit. "
+        value={responseData?.data?.revised_issue_description || ""}
       />
 
       <Label htmlFor="additional_information_needed">
@@ -45,9 +46,8 @@ const LoadedArea = (props: LoadedAreaProps) => {
         id="additional_information_needed"
         rows={1}
         disabled={!(isAcceptTAndC && rated)}
-        defaultValue={responseData?.data?.additional_information_needed || ""}
+        value={responseData?.data?.additional_information_needed || ""}
         className="mb-4 mt-2 min-h-32"
-        placeholder={`The LLM will generate the additional information needed for the issue creation`}
       />
     </>
   )

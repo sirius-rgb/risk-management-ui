@@ -15,9 +15,7 @@ export function CreateIssuePage() {
   const {
     proposedIssueTitle,
     proposedIssueDescription,
-    error,
-    errorMessage,
-    retryCountDown,
+    setRetryModalOpen,
     setProposedIssueTitle,
     setProposedIssueDescription,
     setError,
@@ -30,11 +28,7 @@ export function CreateIssuePage() {
     setRetryCountDown,
   } = useStore()
 
-  const [titleLengthExceeded, setTitleLengthExceeded] = useState(false)
-  const [descriptionLengthExceeded, setDescriptionLengthExceeded] =
-    useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     setProposedIssueTitle("")
@@ -113,7 +107,7 @@ export function CreateIssuePage() {
         dismissible: true,
       })
       setRetryCountDown(countdown)
-      setIsModalOpen(true)
+      setRetryModalOpen(true)
     } finally {
       setIsLoading(false)
     }
@@ -136,7 +130,6 @@ export function CreateIssuePage() {
         defaultValue={""}
         maxLength={10}
         isLoading={isLoading}
-        isLengthExceeded={titleLengthExceeded}
         className="my-4 min-h-16"
       />
       <TextareaWithCopy
@@ -147,7 +140,6 @@ export function CreateIssuePage() {
         defaultValue={""}
         maxLength={20}
         isLoading={isLoading}
-        isLengthExceeded={descriptionLengthExceeded}
         className="my-4 min-h-32"
       />
       <CreateIssueButton
@@ -157,11 +149,7 @@ export function CreateIssuePage() {
         loadedName={"Create"}
       />
       {isLoading && <Loading />}
-      <RetryModal
-        errorDescription={errorMessage}
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-      />
+      <RetryModal />
     </section>
   )
 }

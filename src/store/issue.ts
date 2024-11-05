@@ -9,7 +9,9 @@ export interface Issue {
   isIssueLoading: boolean
   isReviewing: boolean
   responseData: any | null
+  isRetryModalOpen: boolean
   retryCountDown: number
+  setRetryModalOpen: (isRetryModalOpen: boolean) => void
   setRetryCountDown: (countDown: number) => void
   setIsReviewing: (isReviewing: boolean) => void
   setProposedIssueTitle: (title: string) => void
@@ -30,10 +32,14 @@ export const createIssueSlice: StateCreator<Issue> = (set) => ({
   issueId: null,
   isIssueLoading: false,
   isReviewing: false,
+  isRetryModalOpen: false,
   responseData: null,
   retryCountDown: Infinity,
   setRetryCountDown: (countDown) => {
     set({ retryCountDown: countDown })
+  },
+  setRetryModalOpen: (isRetryModalOpen) => {
+    set({ isRetryModalOpen })
   },
   setIsReviewing: (isReviewing) => {
     set({ isReviewing })

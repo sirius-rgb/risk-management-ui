@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   try {
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
-    throw new Error()
+    // throw new Error()
 
     const { issue_title, issue_description } = await request.json()
     const issue_id = `R-${nanoid()}`

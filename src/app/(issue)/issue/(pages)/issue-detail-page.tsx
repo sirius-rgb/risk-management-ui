@@ -25,10 +25,10 @@ export function IssueDetailPage() {
     issueId,
     rated,
     isAcceptTAndC,
-    error,
-    errorMessage,
     responseData,
     isReviewing,
+    setRetryModalOpen,
+    setRetryCountDown,
     setIsReviewing,
     setProposedIssueTitle,
     setProposedIssueDescription,
@@ -42,7 +42,6 @@ export function IssueDetailPage() {
     initializeIssue,
   } = useStore()
   const { trigger, isMutating } = useSWRMutation("/api/issue", issueFetcher)
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     initializeIssue()
@@ -79,14 +78,19 @@ export function IssueDetailPage() {
         issue_description: proposedIssueDescription,
       })
 
-      console.log("result", result)
-
       if (result && result.data) {
         setResponseData(result)
         setIssueId(result.data.issue_id)
       }
 
       if (result && result.status === "fail") {
+        setError(errorMapping[result.code].error)
+        setErrorMessage(errorMapping[result.code].description)
+        if (result.code === 4029) {
+          const match = result.message.match(/(\d+)s/)
+          let countdown = match ? parseInt(match[1], 10) : 10
+          setRetryCountDown(countdown)
+        }
         setError(errorMapping[result.code].error)
         setErrorMessage(errorMapping[result.code].description)
         throw new Error(result.message)
@@ -97,18 +101,10 @@ export function IssueDetailPage() {
         duration: Infinity,
         dismissible: true,
       })
-      setIsModalOpen(true)
+      setRetryModalOpen(true)
     } finally {
       setIsReviewing(false)
     }
-  }
-
-  const handleRetry = async () => {
-    console.log("handleRetry")
-  }
-
-  const handleCancel = () => {
-    setIsModalOpen(false)
   }
 
   return (
@@ -155,6 +151,7 @@ export function IssueDetailPage() {
         </Button>
         <FeedbackDialog isLoading={isMutating} />
       </div>
+      <RetryModal />
     </section>
   )
 }

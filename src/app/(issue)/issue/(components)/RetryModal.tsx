@@ -25,15 +25,9 @@ import { Button } from "@/components/ui/button"
 
 import RetryButtons from "./RetryButton"
 
-interface RetryModalProps {
-  errorDescription: string
-  isModalOpen: boolean
-  setIsModalOpen: Dispatch<SetStateAction<boolean>>
-}
+interface RetryModalProps {}
 
 const RetryModal = (props: RetryModalProps) => {
-  const { errorDescription, isModalOpen, setIsModalOpen } = props
-
   const [isRetrying, setIsRetrying] = useState(false)
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
@@ -44,11 +38,15 @@ const RetryModal = (props: RetryModalProps) => {
     proposedIssueTitle,
     proposedIssueDescription,
     error,
+    errorMessage,
     retryCountDown,
+    isRetryModalOpen,
+    responseData,
     setError,
     setErrorMessage,
     setRetryCountDown,
     setResponseData,
+    setRetryModalOpen,
     setIssueId,
   } = useStore()
 
@@ -62,8 +60,7 @@ const RetryModal = (props: RetryModalProps) => {
   }, [retryCountDown])
 
   useEffect(() => {
-    if (isModalOpen && retryCountDown === 0 && !isRetrying) {
-      console.log("Retrying!!!")
+    if (isRetryModalOpen && retryCountDown === 0 && !isRetrying) {
       setIsRetrying(true)
       toast.loading(`Retrying...`, { id: "retry" })
       handleSendRequest()
@@ -103,12 +100,17 @@ const RetryModal = (props: RetryModalProps) => {
         }
         setError(errorMapping[errorResponse.code].error)
         setErrorMessage(errorMapping[errorResponse.code].description)
+        setRetryCountDown(countdown)
         throw new Error(errorResponse.message)
       }
       const data = await response.json()
-      setResponseData(data)
+      // setResponseData(data)
+      setResponseData({ ...data })
+      console.log("responseData", responseData)
+
       setIssueId(data.data.issue_id)
       setStatus("success")
+      setRetryModalOpen(false)
     } catch (error: any) {
       if (error.name === "AbortError") {
         setStatus("idle")
@@ -123,6 +125,8 @@ const RetryModal = (props: RetryModalProps) => {
         setRetryCountDown(5)
         // setResult("An error occurred while fetching data")
       }
+    } finally {
+      toast.dismiss("retry")
     }
   }
 
@@ -131,16 +135,17 @@ const RetryModal = (props: RetryModalProps) => {
       abortControllerRef.current.abort()
       abortControllerRef.current = null
     }
-    setIsModalOpen(false)
+    setRetryModalOpen(false)
+    toast.dismiss("retry")
   }
 
   return (
-    <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+    <AlertDialog open={isRetryModalOpen} onOpenChange={setRetryModalOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{error}</AlertDialogTitle>
           <AlertDialogDescription>
-            {errorDescription}
+            {errorMessage}
             <br />
             {retryCountDown === 0
               ? `Auto Retrying...`
