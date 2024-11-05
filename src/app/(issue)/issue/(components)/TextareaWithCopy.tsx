@@ -1,5 +1,5 @@
 import React, { useRef } from "react"
-import { Copy } from "lucide-react"
+import { Check, Copy } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -9,18 +9,22 @@ import { Textarea } from "@/components/ui/textarea"
 interface TextareaWithCopyProps {
   id: string
   label: string
+  rows: number
+  defaultValue: string
   // textareaRef: React.RefObject<HTMLTextAreaElement>
   className: string
   handleChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
-  isLoading: boolean
-  maxLength: number
-  isLengthExceeded: boolean
+  isLoading?: boolean
+  maxLength?: number
+  isLengthExceeded?: boolean
 }
 
 const TextareaWithCopy = (props: TextareaWithCopyProps) => {
   const {
     id,
     label,
+    rows,
+    defaultValue,
     // textareaRef,
     className,
     handleChange,
@@ -28,21 +32,17 @@ const TextareaWithCopy = (props: TextareaWithCopyProps) => {
     maxLength,
     isLengthExceeded,
   } = props
-  // const ref = textareaRef || useRef<HTMLTextAreaElement>(null)
-  const handleCopy = (e: any) => {
-    console.log("copy")
 
-    // if (textareaRef.current) {
-    //   navigator.clipboard
-    //     .writeText(textareaRef.current.value)
-    //     .then(() => {
-    //       toast("Copied!")
-    //     })
-    //     .catch((err) => {
-    //       console.error("无法复制文本: ", err)
-    //       toast("Failed to copy!")
-    //     })
-    // }
+  const [isCopied, setIsCopied] = React.useState(false)
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText("aaaaa")
+      setIsCopied(true)
+      setTimeout(() => setIsCopied(false), 2000)
+    } catch (err) {
+      console.error("Failed to copy code: ", err)
+    }
   }
 
   return (
@@ -51,9 +51,9 @@ const TextareaWithCopy = (props: TextareaWithCopyProps) => {
       <div className="relative">
         <Textarea
           id={id}
-          rows={1}
-          // ref={ref}
+          rows={rows}
           className={`${className}`}
+          defaultValue={defaultValue}
           onChange={handleChange}
           disabled={isLoading}
         />
@@ -63,8 +63,13 @@ const TextareaWithCopy = (props: TextareaWithCopyProps) => {
             size="icon"
             onClick={handleCopy}
             title="复制文本"
+            aria-label={isCopied ? "Copied" : "Copy to clipboard"}
           >
-            <Copy className="h-4 w-4" />
+            {isCopied ? (
+              <Check className="h-4 w-4 text-green-500" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>

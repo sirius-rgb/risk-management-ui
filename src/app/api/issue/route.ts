@@ -10,6 +10,7 @@ const nanoidStr = customAlphabet("abcdefghjklimnuvwxyz", 10)
 export async function POST(request: Request) {
   try {
     await new Promise((resolve) => setTimeout(resolve, 2000))
+
     throw new Error()
 
     const { issue_title, issue_description } = await request.json()

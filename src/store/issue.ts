@@ -31,19 +31,9 @@ export const createIssueSlice: StateCreator<Issue> = (set) => ({
   isIssueLoading: false,
   isReviewing: false,
   responseData: null,
-  retryCountDown: 0,
+  retryCountDown: Infinity,
   setRetryCountDown: (countDown) => {
     set({ retryCountDown: countDown })
-    const interval = setInterval(() => {
-      set((state) => {
-        if (state.retryCountDown > 0) {
-          return { retryCountDown: state.retryCountDown - 1 }
-        } else {
-          clearInterval(interval) // 倒计时结束，清除定时器
-          return { retryCountDown: 0 }
-        }
-      })
-    }, 1000) // 每秒自减1
   },
   setIsReviewing: (isReviewing) => {
     set({ isReviewing })

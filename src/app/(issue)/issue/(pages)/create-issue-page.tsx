@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { useStore } from "@/store"
 import { toast } from "sonner"
 
@@ -10,9 +10,6 @@ import PageTitle from "@/app/(issue)/issue/(components)/PageTitle"
 import RetryModal from "@/app/(issue)/issue/(components)/RetryModal"
 import TextareaWithCopy from "@/app/(issue)/issue/(components)/TextareaWithCopy"
 import Loading from "@/app/(issue)/issue/loading"
-
-const TITLE_MAX_LENGTH = 10
-const DESCRIPTION_MAX_LENGTH = 20
 
 export function CreateIssuePage() {
   const {
@@ -25,6 +22,9 @@ export function CreateIssuePage() {
     setProposedIssueDescription,
     setError,
     setErrorMessage,
+    setRated,
+    setRating,
+    setAcceptTAndC,
     setResponseData,
     setIssueId,
     setRetryCountDown,
@@ -57,7 +57,6 @@ export function CreateIssuePage() {
   const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value
     setProposedIssueTitle(value)
-    setTitleLengthExceeded(value.length > TITLE_MAX_LENGTH)
   }
 
   const handleDescriptionChange = (
@@ -65,10 +64,13 @@ export function CreateIssuePage() {
   ) => {
     const value = e.target.value
     setProposedIssueDescription(value)
-    setDescriptionLengthExceeded(value.length > DESCRIPTION_MAX_LENGTH)
   }
 
   const handleSubmit = async () => {
+    resetCheckStatus()
+    setIsLoading(true)
+    let countdown = 0
+
     if (!proposedIssueTitle.trim()) {
       toast.warning("Please enter the issue title")
       return
@@ -78,15 +80,6 @@ export function CreateIssuePage() {
       toast.warning("Please enter the issue description")
       return
     }
-
-    if (titleLengthExceeded || descriptionLengthExceeded) {
-      toast.error(
-        "Please ensure that title and description are within the length limits."
-      )
-      return
-    }
-
-    setIsLoading(true)
     try {
       const response = await fetch("/api/issue", {
         method: "POST",
@@ -103,8 +96,7 @@ export function CreateIssuePage() {
         const errorResponse = await response.json()
         if (errorResponse.code === 4029) {
           const match = errorResponse.message.match(/(\d+)s/)
-          const countdownTime = match ? parseInt(match[1], 10) : 10
-          console.log("countdownTime", countdownTime)
+          countdown = match ? parseInt(match[1], 10) : 10
         }
         setError(errorMapping[errorResponse.code].error)
         setErrorMessage(errorMapping[errorResponse.code].description)
@@ -120,21 +112,17 @@ export function CreateIssuePage() {
         duration: Infinity,
         dismissible: true,
       })
-      setRetryCountDown(5)
+      setRetryCountDown(countdown)
       setIsModalOpen(true)
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleRetry = async () => {
-    setIsModalOpen(false)
-    await handleSubmit()
-    // toast.dismiss()
-  }
-
-  const handleCancel = async () => {
-    setIsModalOpen(false)
+  const resetCheckStatus = () => {
+    setRated(false)
+    setRating(0)
+    setAcceptTAndC(false)
   }
 
   return (
@@ -143,7 +131,9 @@ export function CreateIssuePage() {
       <TextareaWithCopy
         id={"title"}
         label={"Draft Issue Title"}
+        rows={1}
         handleChange={handleTitleChange}
+        defaultValue={""}
         maxLength={10}
         isLoading={isLoading}
         isLengthExceeded={titleLengthExceeded}
@@ -152,7 +142,9 @@ export function CreateIssuePage() {
       <TextareaWithCopy
         id={"description"}
         label={"Draft Issue Description"}
+        rows={1}
         handleChange={handleDescriptionChange}
+        defaultValue={""}
         maxLength={20}
         isLoading={isLoading}
         isLengthExceeded={descriptionLengthExceeded}
@@ -166,14 +158,9 @@ export function CreateIssuePage() {
       />
       {isLoading && <Loading />}
       <RetryModal
-        error={error}
-        autoRetry={retryCountDown}
         errorDescription={errorMessage}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
-        handleRetry={handleRetry}
-        handleCancel={handleCancel}
-        handleResubmit={handleSubmit}
       />
     </section>
   )
