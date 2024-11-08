@@ -5,12 +5,14 @@ export interface Issue {
   proposedIssueDescription: string
   issueId: string | null
   error: string
+  errorCode: string
   errorMessage: string
   isIssueLoading: boolean
   isReviewing: boolean
   responseData: any | null
   isRetryModalOpen: boolean
   retryCountDown: number
+  setErrorCode: (code: string) => void
   setRetryModalOpen: (isRetryModalOpen: boolean) => void
   setRetryCountDown: (countDown: number) => void
   setIsReviewing: (isReviewing: boolean) => void
@@ -28,6 +30,7 @@ export const createIssueSlice: StateCreator<Issue> = (set) => ({
   proposedIssueTitle: "",
   proposedIssueDescription: "",
   error: "",
+  errorCode: "0",
   errorMessage: "",
   issueId: null,
   isIssueLoading: false,
@@ -35,6 +38,9 @@ export const createIssueSlice: StateCreator<Issue> = (set) => ({
   isRetryModalOpen: false,
   responseData: null,
   retryCountDown: Infinity,
+  setErrorCode(code) {
+    set({ errorCode: code })
+  },
   setRetryCountDown: (countDown) => {
     set({ retryCountDown: countDown })
   },

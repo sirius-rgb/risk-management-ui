@@ -21,8 +21,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
 
+import OKButton from "./OKButton"
 import RetryButtons from "./RetryButton"
 
 interface RetryModalProps {}
@@ -38,17 +38,25 @@ const RetryModal = (props: RetryModalProps) => {
     proposedIssueTitle,
     proposedIssueDescription,
     error,
+    errorCode,
     errorMessage,
     retryCountDown,
     isRetryModalOpen,
     responseData,
     setError,
+    setErrorCode,
     setErrorMessage,
     setRetryCountDown,
     setResponseData,
     setRetryModalOpen,
     setIssueId,
   } = useStore()
+
+  useEffect(() => {
+    console.log("errorCode", errorCode)
+  }, [])
+
+  const buttonType = errorMapping[errorCode]?.buttonType
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -60,7 +68,12 @@ const RetryModal = (props: RetryModalProps) => {
   }, [retryCountDown])
 
   useEffect(() => {
-    if (isRetryModalOpen && retryCountDown === 0 && !isRetrying) {
+    if (
+      isRetryModalOpen &&
+      retryCountDown === 0 &&
+      !isRetrying &&
+      buttonType === "retry"
+    ) {
       setIsRetrying(true)
       toast.loading(`Retrying...`, { id: "retry" })
       handleSendRequest()
@@ -99,6 +112,7 @@ const RetryModal = (props: RetryModalProps) => {
           countdown = match ? parseInt(match[1], 10) : 10
         }
         setError(errorMapping[errorResponse.code].error)
+        setErrorCode(errorResponse.code)
         setErrorMessage(errorMapping[errorResponse.code].description)
         setRetryCountDown(countdown)
         throw new Error(errorResponse.message)
@@ -147,19 +161,27 @@ const RetryModal = (props: RetryModalProps) => {
           <AlertDialogDescription>
             {errorMessage}
             <br />
-            {retryCountDown === 0
-              ? `Auto Retrying...`
-              : `Auto Retrying in ${retryCountDown} seconds.`}
+            {buttonType === "retry" && (
+              <span>
+                {retryCountDown === 0
+                  ? `Auto Retrying...`
+                  : `Auto Retrying in ${retryCountDown} seconds.`}
+              </span>
+            )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter
           style={{ display: "flex", justifyContent: "center" }}
         >
-          <RetryButtons
-            status={status}
-            handleSendRequest={handleSendRequest}
-            handleAbortRequest={handleAbortRequest}
-          />
+          {buttonType === "ok" ? (
+            <OKButton handleClick={() => setRetryModalOpen(false)}>OK</OKButton>
+          ) : (
+            <RetryButtons
+              status={status}
+              handleSendRequest={handleSendRequest}
+              handleAbortRequest={handleAbortRequest}
+            />
+          )}
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

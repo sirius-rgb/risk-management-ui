@@ -84,8 +84,6 @@ export function IssueDetailPage() {
       }
 
       if (result && result.status === "fail") {
-        setError(errorMapping[result.code].error)
-        setErrorMessage(errorMapping[result.code].description)
         if (result.code === 4029) {
           const match = result.message.match(/(\d+)s/)
           let countdown = match ? parseInt(match[1], 10) : 10

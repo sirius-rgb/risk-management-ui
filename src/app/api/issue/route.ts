@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   try {
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
-    // throw new Error()
+    throw new Error()
 
     const { issue_title, issue_description } = await request.json()
     const issue_id = `R-${nanoid()}`
@@ -37,10 +37,12 @@ export async function POST(request: Request) {
       {
         status: "fail",
         message:
-          "The LLM service is currently unavailable. Please try again 5s later.",
+          // "The LLM service is currently unavailable. Please try again 5s later.",
+          "Error occur!",
         data: null,
+        code: 400,
         // code: 403,
-        code: 4029,
+        // code: 4029,
         // code: 5000,
       },
       { status: 429 }

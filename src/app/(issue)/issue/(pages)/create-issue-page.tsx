@@ -19,6 +19,7 @@ export function CreateIssuePage() {
     setProposedIssueTitle,
     setProposedIssueDescription,
     setError,
+    setErrorCode,
     setErrorMessage,
     setRated,
     setRating,
@@ -93,6 +94,7 @@ export function CreateIssuePage() {
           countdown = match ? parseInt(match[1], 10) : 10
         }
         setError(errorMapping[errorResponse.code].error)
+        setErrorCode(errorResponse.code)
         setErrorMessage(errorMapping[errorResponse.code].description)
         throw new Error(errorResponse.message)
       }
