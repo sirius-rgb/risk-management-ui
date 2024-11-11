@@ -11,15 +11,6 @@ export const issueFetcher = (url: string, { arg }: { arg: Issue }) =>
     body: JSON.stringify(arg),
   }).then((res) => res.json())
 
-//   if (!response.ok) {
-//     const errorData = await response.json()
-
-//     throw new Error(errorData.message)
-//   }
-
-//   return response.json()
-// }
-
 export const feedbackFetcher = (url: string, { arg }: { arg: Feedback }) =>
   fetch(url, {
     method: "POST",
@@ -34,6 +25,9 @@ export const errorMapping: {
     error: string
     description: string
     buttonType: "ok" | "retry"
+    retryCountdown?: number
+    retrtTimeout?: number
+    retryAttempts?: number
   }
 } = {
   400: {
@@ -57,13 +51,33 @@ export const errorMapping: {
     error: "Request Timeout",
     description:
       "We have attempted to process your request multiple times, but it was unsuccessful.",
+    retryCountdown: 5,
+    retrtTimeout: 90,
+    retryAttempts: 0,
+    buttonType: "retry",
+  },
+  5004: {
+    error: "Bad Gateway",
+    description:
+      "We're having trouble connecting to the server. The system is automatically retrying.",
+    retryCountdown: 5,
+    retrtTimeout: 90,
+    retryAttempts: 0,
     buttonType: "retry",
   },
 }
 
-// export const errorMapping = {
-//   400: { error: "Bad Request", description: "Invalid input provided.", buttonType: "ok" },
-//   403: { error: "Forbidden", description: "You do not have permission.", buttonType: "ok" },
-//   429: { error: "Too Many Requests", description: "Please wait and try again.", buttonType: "retry" },
-//   500: { error: "Server Error", description: "Internal server error occurred.", buttonType: "retry" },
-// }
+const calculateRetryTimeout = (attempt: number): number => {
+  switch (attempt) {
+    case 0:
+      return 90
+    case 1:
+      return 120
+    case 2:
+      return 150
+    case 3:
+      return 180
+    default:
+      return 90
+  }
+}

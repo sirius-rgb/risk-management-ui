@@ -37,13 +37,18 @@ export async function POST(request: Request) {
       {
         status: "fail",
         message:
-          // "The LLM service is currently unavailable. Please try again 5s later.",
-          "Error occur!",
+          // "400 Bad Request",
+          // "403 Unauthorized",
+          // "429 The LLM service is currently unavailable. Please try again 10s later.",
+          "500 Request timeout",
+          // "500 Request timeout",
+          // "504 Bad Gateway",
         data: null,
-        code: 400,
+        // code: 400,
         // code: 403,
         // code: 4029,
-        // code: 5000,
+        code: 5000,
+        // code: 5004,
       },
       { status: 429 }
     )

@@ -12,6 +12,8 @@ export interface Issue {
   responseData: any | null
   isRetryModalOpen: boolean
   retryCountDown: number
+  retryTimes: number
+  setRetryTimes: (times: number) => void
   setErrorCode: (code: string) => void
   setRetryModalOpen: (isRetryModalOpen: boolean) => void
   setRetryCountDown: (countDown: number) => void
@@ -38,6 +40,10 @@ export const createIssueSlice: StateCreator<Issue> = (set) => ({
   isRetryModalOpen: false,
   responseData: null,
   retryCountDown: Infinity,
+  retryTimes: 0,
+  setRetryTimes: (times) => {
+    set({ retryTimes: times })
+  },
   setErrorCode(code) {
     set({ errorCode: code })
   },

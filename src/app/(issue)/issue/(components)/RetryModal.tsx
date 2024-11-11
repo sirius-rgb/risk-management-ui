@@ -3,6 +3,7 @@ import React, {
   Dispatch,
   SetStateAction,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react"
@@ -43,6 +44,8 @@ const RetryModal = (props: RetryModalProps) => {
     retryCountDown,
     isRetryModalOpen,
     responseData,
+    retryTimes,
+    setRetryTimes,
     setError,
     setErrorCode,
     setErrorMessage,
@@ -51,10 +54,6 @@ const RetryModal = (props: RetryModalProps) => {
     setRetryModalOpen,
     setIssueId,
   } = useStore()
-
-  useEffect(() => {
-    console.log("errorCode", errorCode)
-  }, [])
 
   const buttonType = errorMapping[errorCode]?.buttonType
 
@@ -84,8 +83,8 @@ const RetryModal = (props: RetryModalProps) => {
 
   const handleSendRequest = async () => {
     setStatus("loading")
+    setRetryTimes(retryTimes + 1)
     setRetryCountDown(0)
-    // setResult(null)
 
     // Create a new AbortController for this request
     abortControllerRef.current = new AbortController()
@@ -100,6 +99,8 @@ const RetryModal = (props: RetryModalProps) => {
         body: JSON.stringify({
           issue_title: proposedIssueTitle,
           issue_description: proposedIssueDescription,
+          retry_attempts: retryTimes ?? 0,
+          retry_timeout: 90 + 30 * retryTimes,
         }),
         signal,
       })
@@ -107,14 +108,17 @@ const RetryModal = (props: RetryModalProps) => {
 
       if (!response.ok) {
         const errorResponse = await response.json()
+        setRetryCountDown(
+          errorMapping[errorResponse.code].retryCountdown as number
+        )
         if (errorResponse.code === 4029) {
           const match = errorResponse.message.match(/(\d+)s/)
           countdown = match ? parseInt(match[1], 10) : 10
+          setRetryCountDown(countdown)
         }
         setError(errorMapping[errorResponse.code].error)
         setErrorCode(errorResponse.code)
         setErrorMessage(errorMapping[errorResponse.code].description)
-        setRetryCountDown(countdown)
         throw new Error(errorResponse.message)
       }
       const data = await response.json()
@@ -136,7 +140,7 @@ const RetryModal = (props: RetryModalProps) => {
           duration: Infinity,
           dismissible: true,
         })
-        setRetryCountDown(5)
+        // setRetryCountDown(5)
         // setResult("An error occurred while fetching data")
       }
     } finally {
@@ -153,12 +157,86 @@ const RetryModal = (props: RetryModalProps) => {
     toast.dismiss("retry")
   }
 
+  const renderModalContent = useMemo(() => {
+    console.log("errorCode", errorCode)
+
+    switch (errorCode.toString()) {
+      case "400":
+        return (
+          <AlertDialogDescription>
+            {errorMessage}
+            <br />
+            <OKButton handleClick={() => setRetryModalOpen(false)}>OK</OKButton>
+          </AlertDialogDescription>
+        )
+      case "403":
+        return (
+          <AlertDialogDescription>
+            {errorMessage}
+            <br />
+            <OKButton handleClick={() => setRetryModalOpen(false)}>OK</OKButton>
+          </AlertDialogDescription>
+        )
+      case "4029":
+        return (
+          <AlertDialogDescription>
+            {errorMessage}
+            <br />
+            {retryCountDown === 0
+              ? `Auto Retrying...`
+              : `Auto Retrying in ${retryCountDown} seconds.`}
+          </AlertDialogDescription>
+        )
+      case "5000":
+        return (
+          <AlertDialogDescription>
+            {errorMessage}
+            {buttonType === "retry" && (
+              <span>
+                {retryCountDown === 0
+                  ? `Auto Retrying...`
+                  : `Auto Retrying in ${retryCountDown} seconds.`}
+              </span>
+            )}
+            <br />
+            <RetryButtons
+              status={status}
+              handleSendRequest={handleSendRequest}
+              handleAbortRequest={handleAbortRequest}
+            />
+          </AlertDialogDescription>
+        )
+      case "5004":
+        return (
+          <AlertDialogDescription>
+            {errorMessage}
+            <br />
+            <RetryButtons
+              status={status}
+              handleSendRequest={handleSendRequest}
+              handleAbortRequest={handleAbortRequest}
+            />
+          </AlertDialogDescription>
+        )
+      default:
+        return (
+          <AlertDialogDescription>
+            {errorMessage}
+            <br />
+            <OKButton handleClick={() => setRetryModalOpen(false)}>OK</OKButton>
+          </AlertDialogDescription>
+        )
+    }
+  }, [errorCode, errorMessage, retryCountDown, setRetryModalOpen, status])
+
   return (
     <AlertDialog open={isRetryModalOpen} onOpenChange={setRetryModalOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{error}</AlertDialogTitle>
-          <AlertDialogDescription>
+        </AlertDialogHeader>
+        {renderModalContent}
+        {/* <AlertDialogDescription>
             {errorMessage}
             <br />
             {buttonType === "retry" && (
@@ -181,8 +259,8 @@ const RetryModal = (props: RetryModalProps) => {
               handleSendRequest={handleSendRequest}
               handleAbortRequest={handleAbortRequest}
             />
-          )}
-        </AlertDialogFooter>
+          )} */}
+        {/* </AlertDialogFooter> */}
       </AlertDialogContent>
     </AlertDialog>
   )

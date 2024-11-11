@@ -89,13 +89,18 @@ export function CreateIssuePage() {
 
       if (!response.ok) {
         const errorResponse = await response.json()
+        setRetryCountDown(
+          errorMapping[errorResponse.code].retryCountdown as number
+        )
         if (errorResponse.code === 4029) {
           const match = errorResponse.message.match(/(\d+)s/)
           countdown = match ? parseInt(match[1], 10) : 10
+          setRetryCountDown(countdown)
         }
         setError(errorMapping[errorResponse.code].error)
         setErrorCode(errorResponse.code)
         setErrorMessage(errorMapping[errorResponse.code].description)
+
         throw new Error(errorResponse.message)
       }
 
@@ -108,7 +113,10 @@ export function CreateIssuePage() {
         duration: Infinity,
         dismissible: true,
       })
-      setRetryCountDown(countdown)
+
+      console.log("countdown", countdown)
+
+      // setRetryCountDown(countdown)
       setRetryModalOpen(true)
     } finally {
       setIsLoading(false)
