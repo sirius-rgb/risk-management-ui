@@ -19,7 +19,7 @@ const IssuePage = () => {
     }
   }, [responseData])
 
-  return !hasResponseData ? <IssueDetailPage /> : <CreateIssuePage />
+  return hasResponseData ? <IssueDetailPage /> : <CreateIssuePage />
 }
 
 export default IssuePage

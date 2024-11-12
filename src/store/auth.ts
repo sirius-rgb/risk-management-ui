@@ -7,7 +7,7 @@ export interface Auth {
   showTAndCModal: boolean
   token: string
   setToken: (token: string) => void
-  setShowLoginModal: (isOpen: boolean, isAccept: boolean) => void
+  setShowLoginModal: (isOpen: boolean) => void
   setTAndCModalOpen: (status: boolean) => void
   onAccountSelect?: (account: string) => void
   user: {
@@ -40,8 +40,7 @@ export const createAuthSlice: StateCreator<Auth> = (set, get) => ({
   showTAndCModal: false,
   token: "",
   setToken: (token) => set({ token }),
-  setShowLoginModal: (isOpen, isAccept) =>
-    set({ showLoginModal: isOpen, isAcceptTAndC: isAccept }),
+  setShowLoginModal: (isOpen) => set({ showLoginModal: isOpen }),
   setTAndCModalOpen: (status) => set({ showLoginModal: status }),
   user: {
     name: "",

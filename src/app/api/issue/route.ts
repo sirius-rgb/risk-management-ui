@@ -46,8 +46,8 @@ export async function POST(request: Request) {
         data: null,
         // code: 400,
         // code: 403,
-        code: 4029,
-        // code: 5000,
+        // code: 4029,
+        code: 5000,
         // code: 5004,
       },
       { status: 429 }

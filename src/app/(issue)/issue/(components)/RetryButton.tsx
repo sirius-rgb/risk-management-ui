@@ -14,8 +14,8 @@ export default function RetryButtons(props: RetryModalProps) {
   const { status, handleSendRequest, handleAbortRequest } = props
 
   return (
-    <div className="m-auto my-2 space-y-4">
-      <div className="space-x-4 text-center">
+    <span className="m-auto my-2 block space-y-4">
+      <span className="block space-x-4 text-center">
         <Button
           onClick={handleSendRequest}
           disabled={status === "loading"}
@@ -38,7 +38,7 @@ export default function RetryButtons(props: RetryModalProps) {
         >
           Cancel
         </Button>
-      </div>
-    </div>
+      </span>
+    </span>
   )
 }

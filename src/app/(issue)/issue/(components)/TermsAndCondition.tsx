@@ -1,5 +1,4 @@
 import React from "react"
-import { useStore } from "@/store"
 
 import { statement } from "@/lib/conts"
 import {
@@ -23,6 +22,7 @@ interface TermsAndConditionProps {
 
 const TermsAndConditions = (props: TermsAndConditionProps) => {
   const { isAcceptTAndC, isReviewing, setAcceptTAndC } = props
+
   return (
     <AlertDialog>
       <div className="my-2 flex flex-col items-center justify-center space-y-2 sm:flex-row sm:justify-start sm:space-x-2 sm:space-y-0">

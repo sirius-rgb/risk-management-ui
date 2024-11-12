@@ -1,6 +1,6 @@
 "use client"
 
-import { ErrorInfo, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useStore } from "@/store"
 import { toast } from "sonner"
 
@@ -49,6 +49,12 @@ export function CreateIssuePage() {
     }
   }, [])
 
+  const resetCheckStatus = () => {
+    setRated(false)
+    setRating(0)
+    setAcceptTAndC(false)
+  }
+
   const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value
     setProposedIssueTitle(value)
@@ -89,14 +95,17 @@ export function CreateIssuePage() {
 
       if (!response.ok) {
         const errorResponse = await response.json()
-        setRetryCountDown(
-          errorMapping[errorResponse.code].retryCountdown as number
-        )
+        // setRetryCountDown(
+        //   errorMapping[errorResponse.code]?.retryCountdown as number
+        // )
+        countdown = errorMapping[errorResponse.code]?.retryCountdown as number
+
         if (errorResponse.code === 4029) {
           const match = errorResponse.message.match(/(\d+)s/)
           countdown = match ? parseInt(match[1], 10) : 10
-          setRetryCountDown(countdown)
+          // setRetryCountDown(countdown)
         }
+
         setError(errorMapping[errorResponse.code].error)
         setErrorCode(errorResponse.code)
         setErrorMessage(errorMapping[errorResponse.code].description)
@@ -113,18 +122,11 @@ export function CreateIssuePage() {
         duration: Infinity,
         dismissible: true,
       })
-      console.log("countdown", countdown)
-      // setRetryCountDown(countdown)
+      setRetryCountDown(countdown)
       setRetryModalOpen(true)
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const resetCheckStatus = () => {
-    setRated(false)
-    setRating(0)
-    setAcceptTAndC(false)
   }
 
   return (

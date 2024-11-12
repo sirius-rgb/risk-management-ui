@@ -37,6 +37,7 @@ export function IssueDetailPage() {
     setRating,
     setRated,
     setError,
+    setErrorCode,
     setErrorMessage,
     setAcceptTAndC,
     initializeIssue,
@@ -65,11 +66,15 @@ export function IssueDetailPage() {
     setProposedIssueDescription(value)
   }
 
-  async function handleReview(): Promise<void> {
-    setIsReviewing(true)
-    setAcceptTAndC(false)
-    setRating(0)
+  const resetCheckStatus = () => {
     setRated(false)
+    setRating(0)
+    setAcceptTAndC(false)
+  }
+
+  async function handleReview(): Promise<void> {
+    resetCheckStatus()
+    setIsReviewing(true)
 
     try {
       const result = await trigger({
@@ -83,14 +88,21 @@ export function IssueDetailPage() {
         setIssueId(result.data.issue_id)
       }
 
+      setRetryCountDown(
+        (errorMapping[result.code]?.retryCountdown as number) ?? 5
+      )
+
       if (result && result.status === "fail") {
         if (result.code === 4029) {
           const match = result.message.match(/(\d+)s/)
           let countdown = match ? parseInt(match[1], 10) : 10
           setRetryCountDown(countdown)
         }
+
         setError(errorMapping[result.code].error)
+        setErrorCode(result.code)
         setErrorMessage(errorMapping[result.code].description)
+
         throw new Error(result.message)
       }
     } catch (error: any) {
