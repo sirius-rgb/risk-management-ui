@@ -82,10 +82,12 @@ const RetryModal = (props: RetryModalProps) => {
   }, [retryCountDown])
 
   const handleSendRequest = async () => {
+    if (isRetrying) return
+    setIsRetrying(true)
     setStatus("loading")
     setRetryTimes(retryTimes + 1)
     setRetryCountDown(0)
-
+    toast.loading(`Retrying...`, { id: "retry" })
     // Create a new AbortController for this request
     abortControllerRef.current = new AbortController()
     const signal = abortControllerRef.current.signal
@@ -100,7 +102,7 @@ const RetryModal = (props: RetryModalProps) => {
           issue_title: proposedIssueTitle,
           issue_description: proposedIssueDescription,
           retry_attempts: retryTimes ?? 0,
-          retry_timeout: 90 + 30 * retryTimes,
+          retry_timeout: Math.min(90 + 30 * (retryTimes ?? 0), 300),
         }),
         signal,
       })
@@ -124,7 +126,6 @@ const RetryModal = (props: RetryModalProps) => {
       const data = await response.json()
       // setResponseData(data)
       setResponseData({ ...data })
-      console.log("responseData", responseData)
 
       setIssueId(data.data.issue_id)
       setStatus("success")
@@ -144,6 +145,7 @@ const RetryModal = (props: RetryModalProps) => {
         // setResult("An error occurred while fetching data")
       }
     } finally {
+      setIsRetrying(false)
       toast.dismiss("retry")
     }
   }
@@ -156,78 +158,64 @@ const RetryModal = (props: RetryModalProps) => {
     setRetryModalOpen(false)
     toast.dismiss("retry")
   }
-
   const renderModalContent = useMemo(() => {
-    console.log("errorCode", errorCode)
+    const renderDefaultContent = () => (
+      <AlertDialogDescription className="flex flex-col items-center justify-center space-y-4">
+        <span className="text-center text-xl font-semibold text-red-500">
+          An unexpected error occurred.
+        </span>
+        <p className="text-base text-gray-500">
+          Please try again later or contact support if the problem persists.
+        </p>
+        <OKButton handleClick={() => setRetryModalOpen(false)}>OK</OKButton>
+      </AlertDialogDescription>
+    )
 
-    switch (errorCode.toString()) {
-      case "400":
-        return (
-          <AlertDialogDescription>
-            {errorMessage}
-            <br />
-            <OKButton handleClick={() => setRetryModalOpen(false)}>OK</OKButton>
-          </AlertDialogDescription>
-        )
-      case "403":
-        return (
-          <AlertDialogDescription>
-            {errorMessage}
-            <br />
-            <OKButton handleClick={() => setRetryModalOpen(false)}>OK</OKButton>
-          </AlertDialogDescription>
-        )
-      case "4029":
-        return (
-          <AlertDialogDescription>
-            {errorMessage}
+    const renderErrorWithRetry = (message: string) => (
+      <AlertDialogDescription>
+        <span className="my-2 text-base">{message}</span>
+        {buttonType === "retry" && (
+          <span className="mx-auto block py-2 text-center font-semibold">
             <br />
             {retryCountDown === 0
               ? `Auto Retrying...`
               : `Auto Retrying in ${retryCountDown} seconds.`}
-          </AlertDialogDescription>
-        )
+          </span>
+        )}
+        <RetryButtons
+          status={status}
+          handleSendRequest={handleSendRequest}
+          handleAbortRequest={handleAbortRequest}
+        />
+      </AlertDialogDescription>
+    )
+
+    const renderErrorWithoutRetry = (message: string) => (
+      <AlertDialogDescription className="flex flex-col ">
+        <span className="my-2 text-base">{message}</span>
+        <OKButton handleClick={() => setRetryModalOpen(false)}>OK</OKButton>
+      </AlertDialogDescription>
+    )
+
+    switch (errorCode.toString()) {
+      case "400":
+      case "403":
+        return renderErrorWithoutRetry(errorMessage)
+      case "4029":
       case "5000":
-        return (
-          <AlertDialogDescription>
-            {errorMessage}
-            {buttonType === "retry" && (
-              <span>
-                {retryCountDown === 0
-                  ? `Auto Retrying...`
-                  : `Auto Retrying in ${retryCountDown} seconds.`}
-              </span>
-            )}
-            <br />
-            <RetryButtons
-              status={status}
-              handleSendRequest={handleSendRequest}
-              handleAbortRequest={handleAbortRequest}
-            />
-          </AlertDialogDescription>
-        )
       case "5004":
-        return (
-          <AlertDialogDescription>
-            {errorMessage}
-            <br />
-            <RetryButtons
-              status={status}
-              handleSendRequest={handleSendRequest}
-              handleAbortRequest={handleAbortRequest}
-            />
-          </AlertDialogDescription>
-        )
+        return renderErrorWithRetry(errorMessage)
       default:
-        return (
-          <AlertDialogDescription>
-            {errorMessage}
-            <br />
-            <OKButton handleClick={() => setRetryModalOpen(false)}>OK</OKButton>
-          </AlertDialogDescription>
-        )
+        return renderDefaultContent()
     }
-  }, [errorCode, errorMessage, retryCountDown, setRetryModalOpen, status])
+  }, [
+    errorCode,
+    errorMessage,
+    retryCountDown,
+    setRetryModalOpen,
+    status,
+    buttonType,
+  ])
 
   return (
     <AlertDialog open={isRetryModalOpen} onOpenChange={setRetryModalOpen}>

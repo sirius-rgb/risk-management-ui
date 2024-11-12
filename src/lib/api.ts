@@ -20,15 +20,19 @@ export const feedbackFetcher = (url: string, { arg }: { arg: Feedback }) =>
     body: JSON.stringify(arg),
   }).then((res) => res.json())
 
+type ErrorInfo = {
+  error: string
+  description: string
+  buttonType: "ok" | "retry"
+  retryCountdown?: number
+  retrtTimeout?: number
+  retryAttempts?: number
+}
+
 export const errorMapping: {
-  [key: number | string]: {
-    error: string
-    description: string
-    buttonType: "ok" | "retry"
-    retryCountdown?: number
-    retrtTimeout?: number
-    retryAttempts?: number
-  }
+  [key: number | string]: ErrorInfo
+} & {
+  default: ErrorInfo
 } = {
   400: {
     error: "Bad Request",
@@ -65,19 +69,10 @@ export const errorMapping: {
     retryAttempts: 0,
     buttonType: "retry",
   },
-}
-
-const calculateRetryTimeout = (attempt: number): number => {
-  switch (attempt) {
-    case 0:
-      return 90
-    case 1:
-      return 120
-    case 2:
-      return 150
-    case 3:
-      return 180
-    default:
-      return 90
-  }
+  default: {
+    error: "Unexpected Error",
+    description:
+      "An unexpected error occurred. Please try again later or contact support if the problem persists.",
+    buttonType: "ok",
+  },
 }

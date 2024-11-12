@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { ErrorInfo, useEffect, useState } from "react"
 import { useStore } from "@/store"
 import { toast } from "sonner"
 
@@ -113,9 +113,7 @@ export function CreateIssuePage() {
         duration: Infinity,
         dismissible: true,
       })
-
       console.log("countdown", countdown)
-
       // setRetryCountDown(countdown)
       setRetryModalOpen(true)
     } finally {
