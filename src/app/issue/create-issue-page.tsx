@@ -5,11 +5,11 @@ import { useStore } from "@/store"
 import { toast } from "sonner"
 
 import { errorMapping } from "@/lib/api"
-import CreateIssueButton from "@/app/(issue)/issue/(components)/CreateIssueButton"
-import PageTitle from "@/app/(issue)/issue/(components)/PageTitle"
-import RetryModal from "@/app/(issue)/issue/(components)/RetryModal"
-import TextareaWithCopy from "@/app/(issue)/issue/(components)/TextareaWithCopy"
-import Loading from "@/app/(issue)/issue/loading"
+import CreateIssueButton from "@/components/issue/CreateIssueButton"
+import PageTitle from "@/components/issue/PageTitle"
+import RetryModal from "@/components/issue/RetryModal"
+import TextareaWithCopy from "@/components/issue/TextareaWithCopy"
+import Loading from "@/app/issue/loading"
 
 export function CreateIssuePage() {
   const {

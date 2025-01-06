@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react"
 import { useStore } from "@/store"
 
-import { CreateIssuePage } from "./(pages)/create-issue-page"
-import { IssueDetailPage } from "./(pages)/issue-detail-page"
+import { CreateIssuePage } from "./create-issue-page"
+import { IssueDetailPage } from "./issue-detail-page"
 
 const IssuePage = () => {
   const { responseData } = useStore()

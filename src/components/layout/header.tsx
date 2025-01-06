@@ -53,7 +53,7 @@ import UserHoverCard from "@/components/ui/user-hover-card"
 import { Icons } from "@/components/shared/icons"
 import { ModeToggle } from "@/components/shared/mode-toggle"
 
-import { Container } from "../index"
+import { Container } from "./index"
 import LoginModal from "./login-modal"
 import MobileMenu from "./mobile-menu"
 

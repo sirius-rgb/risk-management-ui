@@ -16,7 +16,9 @@ export default function UnauthorizedPage() {
     <div className="flex min-h-screen flex-col bg-gray-100">
       <header className="bg-white shadow">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-gray-900">401 Unauthorized</h1>
+          <Link href="/">
+            <h1 className="text-2xl font-bold text-gray-900">LOGO</h1>
+          </Link>
         </div>
       </header>
       <main className="flex flex-grow items-center justify-center px-4">
@@ -30,18 +32,7 @@ export default function UnauthorizedPage() {
               Oops! It seems you're trying to access a restricted area.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <p className="text-center text-sm text-muted-foreground">
-              If you believe you should have access to this page, please contact
-              our engineer:
-              <a
-                className="block whitespace-pre-wrap break-words px-2 text-red-500"
-                href="mailto:keqing@qq.com,keqing@gmail.com?subject=Support Request&body=Please describe your issue here."
-              >
-                Keqing
-              </a>
-            </p>
-          </CardContent>
+          <CardContent></CardContent>
         </Card>
       </main>
     </div>
