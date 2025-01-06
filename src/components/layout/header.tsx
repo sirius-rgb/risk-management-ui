@@ -19,6 +19,7 @@ import {
   UserPlus,
   Users,
 } from "lucide-react"
+import { signIn, signOut, useSession } from "next-auth/react"
 
 import { components } from "@/lib/conts"
 import { cn } from "@/lib/utils"
@@ -53,53 +54,38 @@ import UserHoverCard from "@/components/ui/user-hover-card"
 import { Icons } from "@/components/shared/icons"
 import { ModeToggle } from "@/components/shared/mode-toggle"
 
-import { Container } from "./index"
+import { LoginButton } from "../shared/login-button"
 import LoginModal from "./login-modal"
 import MobileMenu from "./mobile-menu"
 
 export default function Header() {
   const router = useRouter()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { data: session, status } = useSession()
 
   const showLoginModal = useStore((state) => state.showLoginModal)
   const setShowLoginModal = useStore((state) => state.setShowLoginModal)
 
-  const isLoggedIn = useStore((state) => state.isLoggedIn)
-  const setIsLoggedIn = useStore((state) => state.setLoggedIn)
-
-  const isAcceptTAndC = useStore((state) => state.isAcceptTAndC)
-  const initializeAuth = useStore((state) => state.initializeAuth)
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      sessionStorage.removeItem("hasAcceptedTandC")
+    }
+  }, [status])
 
   useEffect(() => {
-    initializeAuth()
-  }, [initializeAuth])
-
-  useEffect(() => {
-    const hasAcceptedTandC = localStorage.getItem("hasAcceptedTandC")
+    const hasAcceptedTandC = sessionStorage.getItem("hasAcceptedTandC")
     if (hasAcceptedTandC) {
-      setShowLoginModal(false, true)
+      setShowLoginModal(false)
       return
     }
 
-    if (isLoggedIn) {
+    if (session) {
       setTimeout(() => {
-        setShowLoginModal(true, false)
-        localStorage.setItem("hasAcceptedTandC", "true")
+        setShowLoginModal(true)
+        sessionStorage.setItem("hasAcceptedTandC", "true")
       }, 500)
     }
-  }, [isLoggedIn, setShowLoginModal])
-
-  const handleLogin = () => {
-    setIsLoggedIn(true)
-    localStorage.setItem("isLoggedIn", "true")
-  }
-
-  const handleLogout = () => {
-    setIsLoggedIn(false)
-    localStorage.setItem("isLoggedIn", "false")
-    localStorage.removeItem("hasAcceptedTandC")
-    router.push("/")
-  }
+  }, [session, setShowLoginModal])
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
@@ -107,7 +93,7 @@ export default function Header() {
   return (
     <header>
       <nav className="sticky top-0 z-10 border-b border-gray-200 bg-white bg-opacity-30 backdrop-blur-lg backdrop-filter dark:border-none dark:bg-transparent">
-        <Container className="relative z-50 flex justify-between ">
+        <div className="relative z-50 flex justify-between ">
           <div className="max-w-8xl container mx-auto">
             {/* max-w-[1920px] */}
             <div className="flex h-16 items-center justify-between">
@@ -126,18 +112,7 @@ export default function Header() {
               </div>
               <div className="flex items-center space-x-4 ">
                 <div className="hidden sm:block">
-                  {/* 放置大屏幕下的导航项目 */}
-                  {isLoggedIn ? (
-                    <NavBarItems handleLogout={handleLogout} />
-                  ) : (
-                    <Button
-                      variant="outline"
-                      className="bg-background hover:bg-accent"
-                      onClick={handleLogin}
-                    >
-                      Login
-                    </Button>
-                  )}
+                  {session ? <NavBarItems /> : <LoginButton />}
                 </div>
                 <ModeToggle />
                 <div className="sm:hidden">
@@ -148,79 +123,28 @@ export default function Header() {
             {isMobileMenuOpen && <MobileMenu />}
             <LoginModal
               isOpen={showLoginModal}
-              handleAccept={() => setShowLoginModal(false, true)}
+              handleAccept={() => setShowLoginModal(false)}
               onClose={() => {
-                setShowLoginModal(false, false)
-                handleLogout()
+                setShowLoginModal(false)
+                signOut()
               }}
             />
           </div>
-        </Container>
+        </div>
       </nav>
     </header>
   )
 }
 
-interface NavBarItemsProps {
-  handleLogout: () => void
-}
-
-const NavBarItems: React.FC<NavBarItemsProps> = ({ handleLogout }) => {
+const NavBarItems: React.FC = () => {
   const router = useRouter()
+  const { data: session } = useSession()
   const setResponseData = useStore((state) => state.setResponseData)
+
   return (
     <div className="flex items-center justify-center gap-4">
       <NavigationMenu>
         <NavigationMenuList>
-          {/* <NavigationMenuItem>
-            <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                <li className="row-span-3">
-                  <NavigationMenuLink asChild>
-                    <a
-                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                      href="/"
-                    >
-                      <Icons.logo className="h-6 w-6" />
-                      <div className="mb-2 mt-4 text-lg font-medium">
-                        Risk Management Co-pilot
-                      </div>
-                      <p className="text-sm leading-tight text-muted-foreground">
-                        A generative AI assistant that helps you draft risk and
-                        control narratives. Select the task that you need help.
-                      </p>
-                    </a>
-                  </NavigationMenuLink>
-                </li>
-                <ListItem href="/" title="Introduction">
-                  Introduction to the Co-pilot
-                </ListItem>
-                <ListItem href="/terms-and-conditions" title="Usage">
-                  Guide to use the Co-pilot
-                </ListItem>
-                <ListItem href="/terms-and-conditions" title="User Conditions">
-                  User conditions and terms
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Issues</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[500px] ">
-                {components.map((component) => (
-                  <ListItem
-                    key={component.title}
-                    title={component.title}
-                    href={component.href}
-                  >
-                    {component.description}
-                  </ListItem>
-                ))}
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>*/}
           <NavigationMenuItem>
             <Link href="/issue" legacyBehavior passHref>
               <NavigationMenuLink
@@ -237,93 +161,11 @@ const NavBarItems: React.FC<NavBarItemsProps> = ({ handleLogout }) => {
         </NavigationMenuList>
       </NavigationMenu>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger>
-          <UserHoverCard
-            name="Steven Jobs"
-            mail="aaa.bbb@example.com"
-            department="IT - ASP CHINA GZ"
-            jobTitle="CONSULTANT SPECIALIST"
-            avatarUrl="avatar.png"
-          />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              <span>Profile</span>
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <CreditCard className="mr-2 h-4 w-4" />
-              <span>Billing</span>
-              <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
-              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Keyboard className="mr-2 h-4 w-4" />
-              <span>Keyboard shortcuts</span>
-              <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <Users className="mr-2 h-4 w-4" />
-              <span>Team</span>
-            </DropdownMenuItem>
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
-                <UserPlus className="mr-2 h-4 w-4" />
-                <span>Invite users</span>
-              </DropdownMenuSubTrigger>
-              <DropdownMenuPortal>
-                <DropdownMenuSubContent>
-                  <DropdownMenuItem>
-                    <Mail className="mr-2 h-4 w-4" />
-                    <span>Email</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    <span>Message</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    <span>More...</span>
-                  </DropdownMenuItem>
-                </DropdownMenuSubContent>
-              </DropdownMenuPortal>
-            </DropdownMenuSub>
-            <DropdownMenuItem>
-              <Plus className="mr-2 h-4 w-4" />
-              <span>New Team</span>
-              <DropdownMenuShortcut>⌘+T</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <LifeBuoy className="mr-2 h-4 w-4" />
-            <span>Support</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem disabled>
-            <Cloud className="mr-2 h-4 w-4" />
-            <span>API</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Log out</span>
-            <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <UserHoverCard
+        name={session?.user?.name || ""}
+        mail={session?.user?.email || ""}
+        avatarUrl={session?.user?.image || ""}
+      />
     </div>
   )
 }

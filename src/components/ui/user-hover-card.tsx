@@ -1,6 +1,8 @@
-import { Briefcase, Building2, Mail, User } from "lucide-react"
+import { Briefcase, Building2, LogOut, Mail, User } from "lucide-react"
+import { signOut } from "next-auth/react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import {
   HoverCard,
   HoverCardContent,
@@ -9,8 +11,8 @@ import {
 
 interface UserProfile {
   name: string
-  jobTitle: string
-  department: string
+  // jobTitle: string
+  // department: string
   mail: string
   avatarUrl: string
   // staffID: string,
@@ -23,7 +25,7 @@ interface CardInfo {
 }
 
 export default function UserHoverCard(props: UserProfile) {
-  const { name, jobTitle, mail, avatarUrl, department } = props
+  const { name, mail, avatarUrl } = props
 
   const HoverCardInfo = ({ icon: Icon, text, isMuted = false }: CardInfo) => (
     <div className="flex items-center space-x-2">
@@ -43,10 +45,19 @@ export default function UserHoverCard(props: UserProfile) {
         </Avatar>
       </HoverCardTrigger>
       <HoverCardContent className="w-60 overflow-ellipsis">
-        <HoverCardInfo icon={User} text={name} />
-        <HoverCardInfo icon={Briefcase} text={jobTitle} />
-        <HoverCardInfo icon={Mail} text={mail} />
-        <HoverCardInfo icon={Building2} text={department} />
+        <div className="space-y-3">
+          <HoverCardInfo icon={User} text={name} />
+          <div className="pt-2">
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-red-500 hover:bg-red-50 hover:text-red-600"
+              onClick={() => signOut()}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </Button>
+          </div>
+        </div>
       </HoverCardContent>
     </HoverCard>
   )

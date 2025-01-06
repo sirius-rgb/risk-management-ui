@@ -5,6 +5,7 @@ import { Inter } from "next/font/google"
 
 import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/sonner"
+import { SessionProviders } from "@/components/shared/session-provider"
 import { ThemeProvider } from "@/components/shared/theme-provider"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -36,8 +37,10 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             enableSystem
             disableTransitionOnChange
           >
-            {children}
-            <Toaster closeButton richColors />
+            <SessionProviders>
+              {children}
+              <Toaster closeButton richColors />
+            </SessionProviders>
           </ThemeProvider>
         </body>
       </html>

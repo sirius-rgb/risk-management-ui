@@ -1,70 +1,20 @@
+import { Session } from "next-auth"
 import { StateCreator } from "zustand"
 
 export interface Auth {
-  isLoggedIn: boolean
-  isAcceptTAndC: boolean
+  session: Session | null
+  setSession: (session: Session | null) => void
   showLoginModal: boolean
   showTAndCModal: boolean
-  token: string
-  setToken: (token: string) => void
   setShowLoginModal: (isOpen: boolean) => void
   setTAndCModalOpen: (status: boolean) => void
-  onAccountSelect?: (account: string) => void
-  user: {
-    name: string
-    mail: string
-    title: string
-    department: string
-    country: string
-    avatar: string
-  }
-  setLoggedIn: (
-    status: boolean,
-    user?: { username: string; avatar: string }
-  ) => void
-  setUser: (user: {
-    name: string
-    mail: string
-    title: string
-    department: string
-    country: string
-    avatar: string
-  }) => void
-  initializeAuth: () => void
 }
 
-export const createAuthSlice: StateCreator<Auth> = (set, get) => ({
-  isLoggedIn: false,
-  isAcceptTAndC: false,
+export const createAuthSlice: StateCreator<Auth> = (set) => ({
+  session: null,
+  setSession: (session) => set({ session }),
   showLoginModal: false,
   showTAndCModal: false,
-  token: "",
-  setToken: (token) => set({ token }),
   setShowLoginModal: (isOpen) => set({ showLoginModal: isOpen }),
-  setTAndCModalOpen: (status) => set({ showLoginModal: status }),
-  user: {
-    name: "",
-    mail: "",
-    title: "",
-    department: "",
-    country: "",
-    avatar: "",
-  },
-  // setUser: (user) => set({ user }),
-  setUser: (userData) => {
-    set({ user: userData })
-    localStorage.setItem("user", JSON.stringify(userData)) // 存储到 localStorage
-  },
-  setLoggedIn: (status) => {
-    set({ isLoggedIn: status })
-    if (typeof window !== "undefined") {
-      localStorage.setItem("isLoggedIn", status.toString())
-    }
-  },
-  initializeAuth: () => {
-    if (typeof window !== "undefined") {
-      const storedIsLoggedIn = localStorage.getItem("isLoggedIn") === "true"
-      set({ isLoggedIn: storedIsLoggedIn })
-    }
-  },
+  setTAndCModalOpen: (status) => set({ showTAndCModal: status }),
 })
