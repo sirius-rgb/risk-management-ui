@@ -1,15 +1,11 @@
+"use client"
+
 import { useEffect, useState } from "react"
 import Image from "next/image"
 
-const logos = [
-  "/svg/react.svg",
-  "/svg/next.svg",
-  "/svg/python.svg",
-  "/svg/kong.svg",
-  "/svg/gcp.svg",
-]
+import { logos } from "@/config/site"
 
-export default function ScrollingLogo() {
+export default function Scrolling() {
   const [isHovered, setIsHovered] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
@@ -51,10 +47,12 @@ export default function ScrollingLogo() {
                 className="flex h-40 w-40 flex-shrink-0 transform items-center justify-center rounded-lg bg-opacity-10 transition-all duration-300 hover:scale-110 hover:bg-opacity-20"
               >
                 <Image
+                  className="h-auto w-auto max-w-16"
                   src={logo}
                   alt={`Logo ${(index % logos.length) + 1}`}
                   width={120}
                   height={60}
+                  priority={index === 0}
                 />
               </div>
             ))}
