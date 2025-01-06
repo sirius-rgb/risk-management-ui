@@ -50,10 +50,10 @@ import {
   NavigationMenuViewport,
 } from "@/components/ui/navigation-menu"
 import UserHoverCard from "@/components/ui/user-hover-card"
-import { Icons } from "@/components/icons"
-import { ModeToggle } from "@/components/mode-toggle"
+import { Icons } from "@/components/shared/icons"
+import { ModeToggle } from "@/components/shared/mode-toggle"
 
-import { Container } from "../container"
+import { Container } from "../index"
 import LoginModal from "./login-modal"
 import MobileMenu from "./mobile-menu"
 

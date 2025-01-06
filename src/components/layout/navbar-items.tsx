@@ -43,7 +43,7 @@ import {
   navigationMenuTriggerStyle,
   NavigationMenuViewport,
 } from "@/components/ui/navigation-menu"
-import { Icons } from "@/components/icons"
+import { Icons } from "@/components/shared/icons"
 
 interface NavBarItemsProps {
   handleLogout: () => void
