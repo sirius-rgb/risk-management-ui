@@ -1,8 +1,12 @@
 import { StateCreator } from "zustand"
 
 export interface Issue {
-  proposedIssueTitle: string
-  proposedIssueDescription: string
+  issueLocation: string
+  draftIssueTitle: string
+  draftIssueDescription: string
+  suggestedIssueTitle: string
+  suggestedIssueDescription: string
+  additionalInformationNeeded: string
   issueId: string | null
   error: string
   errorCode: string
@@ -18,8 +22,12 @@ export interface Issue {
   setRetryModalOpen: (isRetryModalOpen: boolean) => void
   setRetryCountDown: (countDown: number) => void
   setIsReviewing: (isReviewing: boolean) => void
-  setProposedIssueTitle: (title: string) => void
-  setProposedIssueDescription: (description: string) => void
+  setIssueLocation: (location: string) => void
+  setDraftIssueTitle: (title: string) => void
+  setDraftIssueDescription: (description: string) => void
+  setSuggestedIssueTitle: (title: string) => void
+  setSuggestedIssueDescription: (description: string) => void
+  setAdditionalInformationNeeded: (info: string) => void
   setIssueId: (id: string | null) => void
   setIsIssueLoading: (isIssueLoading: boolean) => void
   setResponseData: (data: any | null) => void
@@ -29,8 +37,12 @@ export interface Issue {
 }
 
 export const createIssueSlice: StateCreator<Issue> = (set) => ({
-  proposedIssueTitle: "",
-  proposedIssueDescription: "",
+  issueLocation: "",
+  draftIssueTitle: "",
+  draftIssueDescription: "",
+  suggestedIssueTitle: "",
+  suggestedIssueDescription: "",
+  additionalInformationNeeded: "",
   error: "",
   errorCode: "0",
   errorMessage: "",
@@ -56,13 +68,29 @@ export const createIssueSlice: StateCreator<Issue> = (set) => ({
   setIsReviewing: (isReviewing) => {
     set({ isReviewing })
   },
-  setProposedIssueTitle: (title) => {
-    localStorage.setItem("proposedIssueTitle", title)
-    set({ proposedIssueTitle: title })
+  setIssueLocation: (location) => {
+    set({ issueLocation: location })
   },
-  setProposedIssueDescription: (description) => {
-    localStorage.setItem("proposedIssueDescription", description)
-    set({ proposedIssueDescription: description })
+  setDraftIssueTitle: (title) => {
+    set({ draftIssueTitle: title })
+    if (typeof window !== "undefined") {
+      localStorage.setItem("draftIssueTitle", title)
+    }
+  },
+  setDraftIssueDescription: (description) => {
+    set({ draftIssueDescription: description })
+    if (typeof window !== "undefined") {
+      localStorage.setItem("draftIssueDescription", description)
+    }
+  },
+  setSuggestedIssueTitle: (title) => {
+    set({ suggestedIssueTitle: title })
+  },
+  setSuggestedIssueDescription: (description) => {
+    set({ suggestedIssueDescription: description })
+  },
+  setAdditionalInformationNeeded: (info) => {
+    set({ additionalInformationNeeded: info })
   },
   setIssueId: (id) => set({ issueId: id }),
   setIsIssueLoading: (isIssueLoading) => set({ isIssueLoading }),
@@ -72,9 +100,9 @@ export const createIssueSlice: StateCreator<Issue> = (set) => ({
   initializeIssue: () => {
     if (typeof window !== "undefined") {
       set({
-        proposedIssueTitle: localStorage.getItem("proposedIssueTitle") || "",
-        proposedIssueDescription:
-          localStorage.getItem("proposedIssueDescription") || "",
+        draftIssueTitle: localStorage.getItem("draftIssueTitle") || "",
+        draftIssueDescription:
+          localStorage.getItem("draftIssueDescription") || "",
       })
     }
   },

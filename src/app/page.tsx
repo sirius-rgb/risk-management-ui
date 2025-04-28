@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import Lenis from "@studio-freight/lenis"
 
 import Header from "@/components/layout/header"
+import Banner from "@/components/section/banner"
 import Feature from "@/components/section/feature"
 import Gallery from "@/components/section/gallery"
 import Hero from "@/components/section/hero"
@@ -28,6 +29,7 @@ export default function Page() {
       <Feature />
       <Gallery />
       <Logo />
+      {/* <Banner /> */}
       {/* <Scrolling /> */}
     </>
   )

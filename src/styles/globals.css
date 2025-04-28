@@ -74,3 +74,37 @@
     @apply bg-background text-foreground;
   }
 }
+
+.blur-blob {
+  @apply absolute rounded-full opacity-30 mix-blend-multiply blur-xl filter;
+  animation: float 10s ease-in-out infinite;
+  background: radial-gradient(
+    circle,
+    rgba(var(--blob-color), 0.8) 0%,
+    rgba(var(--blob-color), 0) 70%
+  );
+}
+
+.blur-blob-1 {
+  @apply left-[20%] top-[5%] h-[50rem] w-[50rem];
+  --blob-color: 102, 33, 191;
+  animation-delay: 0s;
+}
+
+.blur-blob-2 {
+  @apply left-[40%] top-[20%] h-[50rem] w-[50rem];
+  --blob-color: 149, 206, 238;
+  animation-delay: -2s;
+}
+
+.blur-blob-3 {
+  @apply left-[20%] top-[60%] h-[20rem] w-[50rem];
+  --blob-color: 202, 82, 82;
+  animation-delay: -4s;
+}
+
+.blur-blob-4 {
+  @apply left-[30%] top-[10%] h-[20rem] w-[50rem];
+  --blob-color: 73, 220, 193;
+  animation-delay: -6s;
+}

@@ -14,7 +14,7 @@ import {
 export function LoginButton() {
   const { data: session, status } = useSession()
 
-  console.log("session", session)
+  // console.log("session", session)
 
   if (status === "loading") {
     return <Button disabled>Loading...</Button>
