@@ -8,6 +8,7 @@ export interface Issue {
   suggestedIssueDescription: string
   additionalInformationNeeded: string
   issueId: string | null
+  requestId: string | null
   error: string
   errorCode: string
   errorMessage: string
@@ -29,6 +30,7 @@ export interface Issue {
   setSuggestedIssueDescription: (description: string) => void
   setAdditionalInformationNeeded: (info: string) => void
   setIssueId: (id: string | null) => void
+  setRequestId: (id: string | null) => void
   setIsIssueLoading: (isIssueLoading: boolean) => void
   setResponseData: (data: any | null) => void
   setError: (error: string) => void
@@ -47,6 +49,7 @@ export const createIssueSlice: StateCreator<Issue> = (set) => ({
   errorCode: "0",
   errorMessage: "",
   issueId: null,
+  requestId: null,
   isIssueLoading: false,
   isReviewing: false,
   isRetryModalOpen: false,
@@ -93,6 +96,7 @@ export const createIssueSlice: StateCreator<Issue> = (set) => ({
     set({ additionalInformationNeeded: info })
   },
   setIssueId: (id) => set({ issueId: id }),
+  setRequestId: (id) => set({ requestId: id }),
   setIsIssueLoading: (isIssueLoading) => set({ isIssueLoading }),
   setResponseData: (data) => set({ responseData: data }),
   setError: (error) => set({ error: error }),

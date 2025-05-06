@@ -1,95 +1,91 @@
 import { StateCreator } from "zustand"
 
 export interface Feedback {
+  // state
   feedback: string
-  rating: number
-  hoverRating: number
-  rated: boolean
+  score: number
+  hover_score: number
+  error_level: number
+  isSubmitted: boolean
+  isLoading: boolean
   isFeedbackDialogOpen: boolean
-  setFeedbackDialogOpen: (isOpen: boolean) => void
+
+  // reducer
   setFeedback: (feedback: string) => void
-  setRating: (rating: number) => void
-  setRated: (rated: boolean) => void
-  setHoverRating: (rating: number) => void
-  sendRating: (
-    rating: number,
-    feedback: string,
-    issue_id: string,
-    request_id: string
-  ) => Promise<void>
-  sendFeedback: (
-    rating: number,
-    feedback: string,
-    issue_id: string,
-    request_id: string
+  setScore: (score: number) => void
+  setHoverScore: (rating: number) => void
+  setErrorLevel: (error_level: number) => void
+  setSubmitted: (submitted: boolean) => void
+  setLoading: (isLoading: boolean) => void
+  setFeedbackDialogOpen: (isOpen: boolean) => void
+
+  // effect
+  resetFeedback: () => void
+  submitFeedback: (
+    request_id: string,
+    score: number,
+    error_level: number,
+    feedback: string
   ) => Promise<void>
 }
 
-export const createFeedbackSlice: StateCreator<Feedback> = (set) => ({
+export const createFeedbackSlice: StateCreator<Feedback> = (set, get) => ({
   feedback: "",
-  rating: 0,
-  hoverRating: 0,
-  rated: false,
+  score: 0,
+  hover_score: 0,
+  error_level: 0,
+  isSubmitted: false,
+  isLoading: false,
   isFeedbackDialogOpen: false,
-  setFeedbackDialogOpen: (isOpen: boolean) => {
-    set({ isFeedbackDialogOpen: isOpen })
-  },
+
   setFeedback(feedback) {
     set({ feedback })
   },
-  setRating(rating) {
-    set({ rating })
+  setScore(score) {
+    set({ score })
   },
-  setRated(rated) {
-    set({ rated })
+  setHoverScore(hover_score) {
+    set({ hover_score })
   },
-  setHoverRating(hoverRating) {
-    set({ hoverRating })
+  setErrorLevel(error_level) {
+    set({ error_level })
   },
-  sendRating: async (rating: number, issue_id: string, request_id: string) => {
-    try {
-      const response = await fetch("/api/feedback", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          score: rating,
-          feedback: "",
-          issue_id,
-          request_id,
-        }),
-      })
+  setSubmitted: (isSubmitted: boolean) => set({ isSubmitted }),
+  setLoading: (isLoading: boolean) => set({ isLoading }),
+  setFeedbackDialogOpen: (isFeedbackDialogOpen: boolean) =>
+    set({ isFeedbackDialogOpen }),
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok")
-      }
-
-      const data = await response.json()
-      console.log("Feedback sent successfully:", data)
-      set({ rated: true, isFeedbackDialogOpen: false })
-    } catch (error) {
-      console.error("Error sending feedback:", error)
-      // 可以在这里添加更多的错误处理逻辑，比如显示错误消息给用户
-    }
+  resetFeedback: () => {
+    set({
+      score: 0,
+      hover_score: 0,
+      isSubmitted: false,
+      isLoading: false,
+    })
   },
-  sendFeedback: async (
-    rating: number,
-    feedback: string,
-    issue_id: string,
-    request_id: string
+  submitFeedback: async (
+    request_id: string,
+    score: number,
+    error_level: number,
+    feedback: string
   ) => {
+    if (get().isSubmitted) {
+      return
+    }
+
+    set({ isLoading: true })
+
     try {
-      const response = await fetch("/api/feedback", {
+      const response = await fetch("http://localhost:8000/api/feedback", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          score: rating,
-          feedback,
-          issue_id,
           request_id,
+          score,
+          feedback,
+          error_level,
         }),
       })
 
@@ -97,12 +93,20 @@ export const createFeedbackSlice: StateCreator<Feedback> = (set) => ({
         throw new Error("Network response was not ok")
       }
 
+      await new Promise((resolve) => setTimeout(resolve, 500))
+
       const data = await response.json()
       console.log("Feedback sent successfully:", data)
-      set({ rated: true, isFeedbackDialogOpen: false })
+
+      set({
+        score: score,
+        isSubmitted: true,
+        isFeedbackDialogOpen: false,
+        isLoading: false,
+      })
     } catch (error) {
       console.error("Error sending feedback:", error)
-      // 可以在这里添加更多的错误处理逻辑，比如显示错误消息给用户
+      set({ isLoading: false })
     }
   },
 })

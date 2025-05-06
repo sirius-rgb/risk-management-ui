@@ -1,16 +1,12 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
-import { Star } from "lucide-react"
+import React, { useCallback, useEffect, useState } from "react"
+import { useStore } from "@/store"
+import { debounce } from "lodash"
+import { Loader2, Star } from "lucide-react"
+import { toast } from "sonner"
 
 import { cn } from "@/lib/utils"
-import { useFeedback } from "@/hooks/useFeedback"
-
-interface StarRatingProps {
-  initialRating?: number
-  onRatingChange?: (rating: number) => void
-  requestId?: string | null // To detect when the request changes/reruns
-}
 
 const ratingDescriptions: { [key: number]: string } = {
   0: "No rating yet",
@@ -21,111 +17,122 @@ const ratingDescriptions: { [key: number]: string } = {
   5: "Significantly Better",
 }
 
-const StarRating: React.FC<StarRatingProps> = ({
-  initialRating = 0,
-  onRatingChange,
-  requestId,
-}) => {
-  // Use our feedback hook instead of local state
+const StarRating: React.FC = () => {
+  const { requestId } = useStore()
+
   const {
-    submitFeedback,
-    resetFeedback,
+    score,
+    hover_score,
     isSubmitted,
-    currentScore,
     isLoading,
-  } = useFeedback()
+    setScore,
+    setHoverScore,
+    resetFeedback,
+    submitFeedback,
+  } = useStore()
 
-  // Local state for hover effects
-  const [hoverRating, setHoverRating] = useState<number>(0)
+  const [isMounted, setIsMounted] = useState(true)
 
-  // Add local state to track submitted rating for UI display
-  const [submittedRating, setSubmittedRating] = useState<number | null>(null)
+  useEffect(() => {
+    setIsMounted(true)
+    return () => setIsMounted(false)
+  }, [])
 
-  // Reset feedback when requestId changes (user reruns the request)
   useEffect(() => {
     if (requestId) {
       resetFeedback()
-      setSubmittedRating(null) // Reset our local state too
     }
   }, [requestId, resetFeedback])
 
-  // Update local state when currentScore changes
-  useEffect(() => {
-    if (currentScore !== null) {
-      setSubmittedRating(currentScore)
-    }
-  }, [currentScore])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedSubmit = useCallback(
+    debounce(async (rating: number) => {
+      if (!requestId || !isMounted) return
 
-  const handleClick = async (newRating: number) => {
-    // If already submitted, do nothing
-    if (isSubmitted) return
+      try {
+        setScore(rating)
 
-    // Submit the feedback
-    const result = await submitFeedback(newRating)
+        await submitFeedback(requestId, rating, 0, "")
 
-    if (result.success) {
-      // Update our local state immediately for UI feedback
-      setSubmittedRating(newRating)
-      if (onRatingChange) {
-        onRatingChange(newRating)
+        if (isMounted) {
+          toast.success("Rating submitted successfully!")
+        }
+      } catch (error) {
+        console.error("Error submitting feedback:", error)
+        if (isMounted) {
+          toast.error("Failed to submit feedback")
+          setScore(0)
+        }
       }
-    }
+    }, 300),
+    [requestId, setScore, submitFeedback, isMounted]
+  )
+
+  const handleClick = (newRating: number) => {
+    if (isLoading || isSubmitted) return
+
+    debouncedSubmit(newRating)
   }
 
   const handleMouseEnter = (index: number) => {
-    // Only allow hover effects if not submitted
-    if (!isSubmitted) {
-      setHoverRating(index)
-    }
+    if (isLoading || isSubmitted) return
+    setHoverScore(index)
   }
 
   const handleMouseLeave = () => {
-    setHoverRating(0)
+    if (!isLoading && !isSubmitted) {
+      setHoverScore(0)
+    }
   }
 
-  // Determine the current display rating with clear priority
-  const displayRating =
-    // If submitted, show the submitted rating
-    isSubmitted
-      ? submittedRating || currentScore || 0
-      : // If hovering, show the hover rating
-        hoverRating > 0
-        ? hoverRating
-        : // Otherwise show initial rating (likely 0)
-          initialRating
+  const displayRating = isSubmitted
+    ? score
+    : hover_score > 0
+      ? hover_score
+      : score
 
-  const description = ratingDescriptions[displayRating]
+  const description = ratingDescriptions[displayRating || 0]
 
   return (
     <div className="mt-4 flex items-center space-x-4 pl-4">
-      <div className="flex">
-        {[1, 2, 3, 4, 5].map((index) => {
-          // Use submittedRating directly for visual feedback if available
-          const isFilled =
-            index <= (isSubmitted ? submittedRating || 0 : displayRating)
+      <div className={cn("flex", isLoading && "animate-pulse")}>
+        {isLoading ? (
+          <div className="flex items-center">
+            <Loader2 className="mr-2 h-6 w-6 animate-spin text-blue-500" />
+            <span className="text-sm text-gray-600 dark:text-gray-300">
+              Submitting...
+            </span>
+          </div>
+        ) : (
+          [1, 2, 3, 4, 5].map((index) => {
+            const isFilled = index <= (displayRating || 0)
 
-          return (
-            <Star
-              key={index}
-              className={cn(
-                "h-6 w-6",
-                isSubmitted
-                  ? "pointer-events-none" // Remove pointer events when submitted
-                  : "cursor-pointer",
-                isFilled
-                  ? "fill-yellow-400 text-yellow-400"
-                  : "text-gray-300 hover:text-yellow-200"
-              )}
-              onClick={() => handleClick(index)}
-              onMouseEnter={() => handleMouseEnter(index)}
-              onMouseLeave={handleMouseLeave}
-            />
-          )
-        })}
+            return (
+              <Star
+                key={index}
+                className={cn(
+                  "h-6 w-6 transition-colors duration-200",
+                  isSubmitted || isLoading
+                    ? "pointer-events-none"
+                    : "cursor-pointer",
+                  isFilled
+                    ? "fill-yellow-400 text-yellow-400"
+                    : "text-gray-300 hover:text-yellow-200"
+                )}
+                onClick={() => handleClick(index)}
+                onMouseEnter={() => handleMouseEnter(index)}
+                onMouseLeave={handleMouseLeave}
+              />
+            )
+          })
+        )}
       </div>
       <span className="min-w-[200px] text-left text-sm text-gray-600 dark:text-gray-300">
-        {isLoading ? "Submitting feedback..." : description}
-        {isSubmitted && " (Feedback submitted)"}
+        {isLoading
+          ? ""
+          : isSubmitted
+            ? `${description} (Feedback submitted: ${score}/5)`
+            : description}
       </span>
     </div>
   )

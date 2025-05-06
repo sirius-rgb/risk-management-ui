@@ -1,9 +1,9 @@
-import useSWR from "swr"
 import useSWRMutation from "swr/mutation"
 
 interface IssueRequest {
   location: string
-  title: string
+  issue_id?: string | null
+  issue_title: string
   description: string
 }
 
@@ -12,7 +12,7 @@ interface IssueResponse {
   message: string
   code: number
   data: {
-    issue_id: number
+    issue_id: string
     request_id: string
     revised_issue_title: string
     revised_issue_description: string
@@ -20,14 +20,22 @@ interface IssueResponse {
   }
 }
 
-/**
- * Fetcher function to handle POST requests to the issue API
- */
-async function postIssue(
+async function issueFetcher(
   url: string,
   { arg }: { arg: IssueRequest }
 ): Promise<IssueResponse> {
-  const { location, title, description } = arg
+  const { location, issue_id, issue_title, description } = arg
+
+  const payload: any = {
+    location,
+    issue_title,
+    description,
+  }
+
+  // 只有当 issue_id 存在且不为 null 时，才添加到请求体中
+  if (issue_id) {
+    payload.issue_id = issue_id
+  }
 
   try {
     const response = await fetch(url, {
@@ -35,11 +43,7 @@ async function postIssue(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        location: "Hong Kong",
-        title: "test title",
-        description: "test description",
-      }),
+      body: JSON.stringify(payload),
     })
 
     if (!response.ok) {
@@ -53,27 +57,24 @@ async function postIssue(
   }
 }
 
-/**
- * Custom hook for interacting with the issue API
- */
-export function useIssue() {
-  const { trigger, data, error, isMutating } = useSWRMutation(
-    "http://localhost:8000/api/issue",
-    postIssue
-  )
+const url = "http://localhost:8000/api/issue"
 
-  /**
-   * Submit an issue to the API
-   * @param location - The location of the issue
-   * @param title - The title of the issue
-   * @param description - The description of the issue
-   */
+export function useIssue() {
+  const { trigger, data, error, isMutating } = useSWRMutation(url, issueFetcher)
+
   const submitIssue = async (
     location: string,
-    title: string,
-    description: string
+    issue_title: string,
+    description: string,
+    issue_id?: string | null
   ) => {
-    return trigger({ location, title, description })
+    return trigger({
+      location,
+      issue_title,
+      description,
+      // 只有当 issue_id 有值时才包含在请求中
+      ...(issue_id ? { issue_id } : {}),
+    })
   }
 
   return {
@@ -81,30 +82,5 @@ export function useIssue() {
     data,
     error,
     isLoading: isMutating,
-  }
-}
-
-/**
- * Hook to fetch a specific issue by ID
- * This is an additional utility if you need to fetch existing issues
- */
-export function useIssueById(issueId: string | null) {
-  const fetcher = async (url: string) => {
-    const res = await fetch(url)
-    if (!res.ok) {
-      throw new Error("Failed to fetch issue")
-    }
-    return res.json()
-  }
-
-  const { data, error, isLoading } = useSWR(
-    issueId ? `http://localhost:8000/api/issue/${issueId}` : null,
-    fetcher
-  )
-
-  return {
-    issue: data,
-    isError: error,
-    isLoading,
   }
 }
